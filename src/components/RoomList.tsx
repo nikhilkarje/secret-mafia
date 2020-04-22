@@ -63,6 +63,7 @@ export default function RoomList() {
         <TableRow>
           <TableHeader>Id</TableHeader>
           <TableHeader>Title</TableHeader>
+          <TableHeader>Players</TableHeader>
           <TableHeader>Action</TableHeader>
         </TableRow>
         {rooms &&
@@ -70,6 +71,7 @@ export default function RoomList() {
             <TableRow key={room.id}>
               <TableData>{room.id}</TableData>
               <TableData>{room.title}</TableData>
+              <TableData>{room.total_players}</TableData>
               <TableData>
                 <Link href={`/room/${room.id}`}> Join</Link>
               </TableData>

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styled, { css } from "styled-components";
 
-import { User } from "interfaces";
+import { UserListItem } from "interfaces";
 import AddUserModal from "components/AddUserModal";
 import EditUserModal from "components/EditUserModal";
 import DeleteUserModal from "components/DeleteUserModal";
@@ -17,7 +17,7 @@ import { DarkGrey } from "styles/color";
 import { get } from "utils/request";
 
 export default function UserList() {
-  const [users, setUsers] = useState<User[] | null>(null);
+  const [users, setUsers] = useState<UserListItem[] | null>(null);
 
   const fetchUsers = () => {
     get("/api/users")
@@ -45,7 +45,7 @@ export default function UserList() {
           <TableHeader>Action</TableHeader>
         </TableRow>
         {users &&
-          users.map((user: User) => (
+          users.map((user: UserListItem) => (
             <TableRow key={user.id}>
               <TableData>{user.id}</TableData>
               <TableData>{`${user.first_name} ${user.last_name}`}</TableData>

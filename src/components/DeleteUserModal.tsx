@@ -5,7 +5,7 @@ import Card from "components/common/Card";
 import TopHeader from "components/common/TopHeader";
 import { SecondaryButton } from "components/common/Button";
 import Modal from "components/common/Modal";
-import { User } from "interfaces";
+import { UserListItem } from "interfaces";
 import { destroy } from "utils/request";
 import { FadedRed } from "styles/color";
 
@@ -14,7 +14,7 @@ const DeleteUserForm = ({
   onSubmit,
   closeModal,
 }: {
-  user: User;
+  user: UserListItem;
   onSubmit?: () => void;
   closeModal?: any;
 }) => {
@@ -52,7 +52,7 @@ const DeleteUserModal = ({
   children: React.ReactNode;
   triggerCss?: any;
   onSubmit?: () => void;
-  user: User;
+  user: UserListItem;
 }) => {
   const closeRef = useRef(null);
   return (

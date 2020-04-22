@@ -8,12 +8,13 @@ import ChatBox from "components/ChatBox";
 import CableContext from "containers/CableContext";
 import { BrightRed, Green } from "styles/color";
 import { get } from "utils/request";
+import { Message } from "interfaces";
 
 export default function ChatRoom() {
   const { roomId } = useParams();
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const contentRef = useRef(null);
-  const messagesRef = useRef(messages);
+  const messagesRef = useRef<Message[]>(messages);
   const { cable } = useContext(CableContext);
 
   const scrollBottom = () => {

@@ -6,7 +6,7 @@ import TopHeader from "components/common/TopHeader";
 import Button from "components/common/Button";
 import WideInput from "components/common/WideInput";
 import Modal from "components/common/Modal";
-import { User, EditUserForm, EditUserFormIndex } from "interfaces";
+import { UserListItem, EditUserForm, EditUserFormIndex } from "interfaces";
 import { put } from "utils/request";
 
 const EditUserForm = ({
@@ -14,7 +14,7 @@ const EditUserForm = ({
   onSubmit,
   closeModal,
 }: {
-  user: User;
+  user: UserListItem;
   onSubmit?: () => void;
   closeModal?: any;
 }) => {
@@ -113,7 +113,7 @@ const EditUserModal = ({
   children: React.ReactNode;
   triggerCss?: any;
   onSubmit?: () => void;
-  user: User;
+  user: UserListItem;
 }) => {
   const closeRef = useRef(null);
   return (

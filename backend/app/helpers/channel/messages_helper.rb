@@ -1,0 +1,2 @@
+module Channel::MessagesHelper
+end

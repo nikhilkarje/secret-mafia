@@ -1,0 +1,2 @@
+module Channel::ConversationsHelper
+end

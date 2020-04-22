@@ -11,6 +11,13 @@ export interface User {
   last_name: string;
 }
 
+export interface Player {
+  id: number;
+  user: User;
+  status: string;
+  public_role: string;
+}
+
 export interface Message {
   id: number;
   text: string;
@@ -21,6 +28,7 @@ export interface Message {
 export interface Room {
   id: number;
   title: string;
+  players_joined: number;
   total_players: number;
 }
 

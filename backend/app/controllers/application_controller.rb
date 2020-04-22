@@ -4,7 +4,22 @@ class ApplicationController < ActionController::Base
 
   def index
     bootstrap_javascript
+    player = Channel::Player.find_by(:api_user_id => session[:user_id])
+    if player
+      redirect_to "/room/#{player.conversation_id}"
+      return
+    end
     render :index, :layout => false
+  end
+
+  def room
+    bootstrap_javascript
+    player = Channel::Player.find_by(:conversation_id => params[:room_id], :api_user_id => session[:user_id])
+    if player
+      render :index, :layout => false
+    else
+      redirect_to root_path
+    end
   end
 
   def admin

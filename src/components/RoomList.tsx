@@ -13,7 +13,7 @@ import Table, {
   TableData,
 } from "components/common/Table";
 import { DarkGrey, Purple } from "styles/color";
-import { get } from "utils/request";
+import { get, post } from "utils/request";
 
 export default function RoomList() {
   const [rooms, setRooms] = useState<Room[] | null>(null);
@@ -26,9 +26,17 @@ export default function RoomList() {
       .then((data) => setRooms(data));
   };
 
-  const handleReceivedConversation = (data: any) => {
+  const handleReceivedConversation = (data: Room) => {
     if (roomsRef.current) {
-      setRooms([...roomsRef.current, data["channel/conversation"]]);
+      setRooms([...roomsRef.current, data]);
+    }
+  };
+
+  const joinRoom = async (roomId: number) => {
+    const response = await post(`/channel/conversations/${roomId}/players`, {});
+    if (response.ok) {
+      const data = await response.json();
+      window.location.href = `/room/${roomId}`;
     }
   };
 
@@ -39,7 +47,7 @@ export default function RoomList() {
       {
         received: (response) => {
           console.log(response);
-          handleReceivedConversation(response);
+          handleReceivedConversation(response as Room);
         },
         connected: () => {},
         disconnected: () => {},
@@ -71,9 +79,12 @@ export default function RoomList() {
             <TableRow key={room.id}>
               <TableData>{room.id}</TableData>
               <TableData>{room.title}</TableData>
-              <TableData>{room.total_players}</TableData>
               <TableData>
-                <Link href={`/room/${room.id}`}> Join</Link>
+                {room.players_joined}/{room.total_players}
+              </TableData>
+              <TableData>
+                {/* <Link href={`/room/${room.id}`}> Join</Link> */}
+                <Link onClick={() => joinRoom(room.id)}> Join</Link>
               </TableData>
             </TableRow>
           ))}
@@ -82,7 +93,8 @@ export default function RoomList() {
   );
 }
 
-const Link = styled.a`
+const Link = styled.span`
+  cursor: pointer;
   color: ${Purple};
 `;
 

@@ -56,7 +56,7 @@ const ChatBox = ({ id }: { id: number }) => {
 };
 
 const Content = styled.div`
-  padding: 20px 50px 50px;
+  padding: 20px 20px 30px;
   width: 100%;
 
   input {

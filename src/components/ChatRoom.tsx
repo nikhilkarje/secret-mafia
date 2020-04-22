@@ -3,16 +3,17 @@ import { useParams } from "react-router-dom";
 import styled, { css } from "styled-components";
 
 import Card from "components/common/Card";
-import TopHeader from "components/common/TopHeader";
 import ChatBox from "components/ChatBox";
+import GameRoom from "components/GameRoom";
 import CableContext from "containers/CableContext";
 import { BrightRed, Green } from "styles/color";
 import { get } from "utils/request";
-import { Message } from "interfaces";
+import { Room, Message } from "interfaces";
 
 export default function ChatRoom() {
   const { roomId } = useParams();
   const [messages, setMessages] = useState<Message[]>([]);
+  const [room, setRoom] = useState<Room | null>(null);
   const contentRef = useRef(null);
   const messagesRef = useRef<Message[]>(messages);
   const { cable } = useContext(CableContext);
@@ -26,13 +27,16 @@ export default function ChatRoom() {
   const fetchMessages = () => {
     get(`/channel/conversations/${roomId}`)
       .then((response) => response.json())
-      .then((data) => setMessages(data.messages));
+      .then((data) => {
+        const { messages, ...room } = data;
+        setRoom(room);
+        setMessages(messages);
+      });
   };
 
-  const handleReceivedConversation = (data: any) => {
-    console.log(data);
+  const handleReceivedConversation = (data: Message) => {
     if (messagesRef.current) {
-      setMessages([...messagesRef.current, data["channel/message"]]);
+      setMessages([...messagesRef.current, data]);
     }
   };
 
@@ -42,7 +46,7 @@ export default function ChatRoom() {
       { channel: "MessagesChannel", conversation: +roomId },
       {
         received: (response) => {
-          handleReceivedConversation(response);
+          handleReceivedConversation(response as Message);
         },
         connected: () => {},
         disconnected: () => {},
@@ -56,25 +60,42 @@ export default function ChatRoom() {
   }, [messages]);
 
   return (
-    <CCard>
-      <TopHeader>{name}</TopHeader>
-      <Content ref={contentRef}>
-        {messages.map((message) => (
-          <ChatWrapper key={message.id}>
-            <NameSpan>
-              {message.user.first_name} {message.user.last_name}:
-            </NameSpan>
-            <MessageSpan>{message.text}</MessageSpan>
-          </ChatWrapper>
-        ))}
-      </Content>
-      <ChatBox id={+roomId} />
-    </CCard>
+    <Container>
+      {room && messages && (
+        <>
+          <GameContainer>
+            <GameRoom room={room}></GameRoom>
+          </GameContainer>
+          <CCard>
+            <Content ref={contentRef}>
+              {messages.map((message) => (
+                <ChatWrapper key={message.id}>
+                  <NameSpan>
+                    {message.user.first_name} {message.user.last_name}:
+                  </NameSpan>
+                  <MessageSpan>{message.text}</MessageSpan>
+                </ChatWrapper>
+              ))}
+            </Content>
+            <ChatBox id={room.id} />
+          </CCard>
+        </>
+      )}
+    </Container>
   );
 }
 
+const Container = styled.div`
+  display: flex;
+  height: 100%;
+`;
+
+const GameContainer = styled.div`
+  flex: 1 0 auto;
+`;
+
 const CCard = styled(Card)`
-  width: 100%;
+  flex: 0 0 300px;
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -82,8 +103,9 @@ const CCard = styled(Card)`
 
 const Content = styled.div`
   flex: 1 0 auto;
-  padding: 20px 50px;
+  padding: 20px 20px;
   overflow: auto;
+  height: calc(100% - 88px);
 `;
 
 const ChatWrapper = styled.div`

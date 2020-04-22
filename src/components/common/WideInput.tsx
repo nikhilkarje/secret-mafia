@@ -37,6 +37,7 @@ const Input = styled.input<{
   border: 1px solid ${LightGrey};
   background: ${White};
   height: 38px;
+  box-sizing: border-box;
   color: ${Black};
   box-shadow: 0 2px 0 0 rgba(0, 0, 0, 0.08) inset;
 

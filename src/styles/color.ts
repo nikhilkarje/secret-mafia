@@ -1,4 +1,5 @@
 export const Black = "#343434";
+export const Blue = "#3498db";
 export const BrightRed = "#ff0000";
 export const DarkGrey = "#808080";
 export const EggShellWhite = "#f0f0f0";

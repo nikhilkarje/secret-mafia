@@ -70,10 +70,8 @@ export default function ChatRoom() {
             <Content ref={contentRef}>
               {messages.map((message) => (
                 <ChatWrapper key={message.id}>
-                  <NameSpan>
-                    {message.user.first_name} {message.user.last_name}:
-                  </NameSpan>
-                  <MessageSpan isAdmin={message.user.id === 6}>
+                  <NameSpan>{message.name}</NameSpan>
+                  <MessageSpan isAdmin={message.api_user_id === 6}>
                     {message.text}
                   </MessageSpan>
                 </ChatWrapper>

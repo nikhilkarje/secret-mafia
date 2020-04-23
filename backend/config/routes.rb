@@ -4,7 +4,10 @@ Rails.application.routes.draw do
   end
   namespace :channel do
     resources :conversations, only: [:index, :show, :create] do
-      resources :players, only: [:index, :create]
+      resources :players, only: [:index, :create] do
+        get "/pending_action", to: "players#pending_action"
+        post "/confirm_role", to: "players#confirm_role"
+      end
     end
     resources :messages, only: [:create]
   end

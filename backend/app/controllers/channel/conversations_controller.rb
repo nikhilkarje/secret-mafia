@@ -5,8 +5,12 @@ class Channel::ConversationsController < ApplicationController
   end
 
   def show
-    conversation = Channel::Conversation.find(params[:id])
-    render json: conversation, show_children: true
+    player = Channel::Player.find_by(:conversation_id => params[:id], :api_user_id => session[:user_id])
+    if player
+      render json: player.conversation, show_children: true
+      return
+    end
+    render json: {}, :status => 401
   end
 
   def create

@@ -7,7 +7,7 @@ class Channel::Player < ApplicationRecord
   end
 
   def self.action_option
-    { :role => "confirm_role" }
+    { :role => "confirm_role", :default => "none" }
   end
 
   def setPendingAction(action)
@@ -28,13 +28,13 @@ class Channel::Player < ApplicationRecord
   end
 
   def private_liberal_broadcast
-    self.setPendingAction(Channel::Player.action_option[:role])
-    PlayerPrivateChannel.broadcast_to self, { :type => "liberal" }
+    self.setPendingAction(:role)
+    PlayerPrivateChannel.broadcast_to self, { :type => "liberal_conferrence" }
   end
 
   def private_facist_broadcast(facist_players, show_hitler)
-    self.setPendingAction(Channel::Player.action_option[:role])
-    serialized_data = ActiveModel::Serializer::ArraySerializer.new(@facist_players, each_serializer: Channel::PlayerSerializer, show_hitler: show_hitler)
+    self.setPendingAction(:role)
+    serialized_data = ActiveModel::Serializer::ArraySerializer.new(facist_players, each_serializer: Channel::PlayerSerializer, show_hitler: show_hitler)
     PlayerPrivateChannel.broadcast_to self, { :type => "facist_conferrence", :data => serialized_data }
   end
 

@@ -8,13 +8,7 @@ import WideInput from "components/common/WideInput";
 import Modal from "components/common/Modal";
 import { post } from "utils/request";
 
-const NewRoomForm = ({
-  onSubmit,
-  closeModal,
-}: {
-  onSubmit?: () => void;
-  closeModal?: any;
-}) => {
+const NewRoomForm = ({ modalControlRef }: { modalControlRef?: any }) => {
   const [title, setTitle] = useState<string>("");
   const [errorField, setErrorField] = useState<string>("");
 
@@ -39,8 +33,8 @@ const NewRoomForm = ({
       return;
     }
     const response = await post("/channel/conversations", { title });
-    if (closeModal.current) {
-      closeModal.current();
+    if (modalControlRef.current) {
+      modalControlRef.current.removeModal();
     }
   };
 
@@ -65,18 +59,17 @@ const NewRoomForm = ({
 const NewRoomModal = ({
   children,
   triggerCss,
-  onSubmit,
 }: {
   children: React.ReactNode;
   triggerCss?: any;
   onSubmit?: () => void;
 }) => {
-  const closeRef = useRef(null);
+  const modalControlRef = useRef(null);
   return (
     <Modal
-      ref={closeRef}
+      ref={modalControlRef}
       triggerCss={triggerCss}
-      content={<NewRoomForm closeModal={closeRef} onSubmit={onSubmit} />}
+      content={<NewRoomForm modalControlRef={modalControlRef} />}
     >
       {children}
     </Modal>

@@ -30,7 +30,8 @@ const PlayerItem = ({ player }: { player: Player }) => {
 
   return (
     <CCard>
-      {playerItem.status === "logged_out" && <Spinner />}
+      {(playerItem.status === "logged_out" ||
+        playerItem.pending_action !== "none") && <Spinner />}
       {playerItem.user.first_name} {playerItem.user.last_name}
     </CCard>
   );

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_04_23_094252) do
+ActiveRecord::Schema.define(version: 2020_04_23_173950) do
 
   create_table "api_users", force: :cascade do |t|
     t.string "first_name"
@@ -35,6 +35,7 @@ ActiveRecord::Schema.define(version: 2020_04_23_094252) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.integer "api_user_id", default: 1, null: false
+    t.string "name", default: "placeholder", null: false
     t.index ["api_user_id"], name: "index_messages_on_api_user_id"
     t.index ["conversation_id"], name: "index_messages_on_conversation_id"
   end

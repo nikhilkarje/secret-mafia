@@ -11,10 +11,10 @@ import { post } from "utils/request";
 
 const AddUserForm = ({
   onSubmit,
-  closeModal,
+  modalControlRef,
 }: {
   onSubmit?: () => void;
-  closeModal?: any;
+  modalControlRef: any;
 }) => {
   const defaultValues = {
     first_name: "",
@@ -61,8 +61,8 @@ const AddUserForm = ({
       if (onSubmit) {
         onSubmit();
       }
-      if (closeModal.current) {
-        closeModal.current();
+      if (modalControlRef.current) {
+        modalControlRef.current.removeModal();
       }
     }
   };
@@ -114,12 +114,14 @@ const AddUserModal = ({
   triggerCss?: any;
   onSubmit?: () => void;
 }) => {
-  const closeRef = useRef(null);
+  const modalControlRef = useRef(null);
   return (
     <Modal
-      ref={closeRef}
+      ref={modalControlRef}
       triggerCss={triggerCss}
-      content={<AddUserForm closeModal={closeRef} onSubmit={onSubmit} />}
+      content={
+        <AddUserForm modalControlRef={modalControlRef} onSubmit={onSubmit} />
+      }
     >
       {children}
     </Modal>

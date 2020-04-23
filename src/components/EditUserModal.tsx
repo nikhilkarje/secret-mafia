@@ -12,11 +12,11 @@ import { put } from "utils/request";
 const EditUserForm = ({
   user,
   onSubmit,
-  closeModal,
+  modalControlRef,
 }: {
   user: UserListItem;
   onSubmit?: () => void;
-  closeModal?: any;
+  modalControlRef: any;
 }) => {
   const defaultValues = {
     first_name: "",
@@ -64,8 +64,8 @@ const EditUserForm = ({
       if (onSubmit) {
         onSubmit();
       }
-      if (closeModal.current) {
-        closeModal.current();
+      if (modalControlRef.current) {
+        modalControlRef.current.removeModal();
       }
     }
   };
@@ -115,13 +115,17 @@ const EditUserModal = ({
   onSubmit?: () => void;
   user: UserListItem;
 }) => {
-  const closeRef = useRef(null);
+  const modalControlRef = useRef(null);
   return (
     <Modal
-      ref={closeRef}
+      ref={modalControlRef}
       triggerCss={triggerCss}
       content={
-        <EditUserForm user={user} closeModal={closeRef} onSubmit={onSubmit} />
+        <EditUserForm
+          user={user}
+          modalControlRef={modalControlRef}
+          onSubmit={onSubmit}
+        />
       }
     >
       {children}

@@ -9,40 +9,6 @@ import { UserListItem } from "interfaces";
 import { destroy } from "utils/request";
 import { FadedRed } from "styles/color";
 
-const DeleteUserForm = ({
-  user,
-  onSubmit,
-  closeModal,
-}: {
-  user: UserListItem;
-  onSubmit?: () => void;
-  closeModal?: any;
-}) => {
-  const { id, first_name, last_name } = user;
-
-  const submit = async () => {
-    const response = await destroy(`/api/users/${id}`);
-    if (response.ok) {
-      if (onSubmit) {
-        onSubmit();
-      }
-      if (closeModal.current) {
-        closeModal.current();
-      }
-    }
-  };
-
-  return (
-    <Card>
-      <TopHeader backGroundColor={FadedRed}>Remove User</TopHeader>
-      <Content>
-        Are you sure you want to delete {first_name} {last_name}?
-        <CButton onClick={submit}>Delete</CButton>
-      </Content>
-    </Card>
-  );
-};
-
 const DeleteUserModal = ({
   children,
   triggerCss,
@@ -54,13 +20,33 @@ const DeleteUserModal = ({
   onSubmit?: () => void;
   user: UserListItem;
 }) => {
-  const closeRef = useRef(null);
+  const modalControlRef = useRef(null);
+  const { id, first_name, last_name } = user;
+
+  const submit = async () => {
+    const response = await destroy(`/api/users/${id}`);
+    if (response.ok) {
+      if (onSubmit) {
+        onSubmit();
+      }
+      if (modalControlRef.current) {
+        modalControlRef.current.removeModal();
+      }
+    }
+  };
+
   return (
     <Modal
-      ref={closeRef}
+      ref={modalControlRef}
       triggerCss={triggerCss}
       content={
-        <DeleteUserForm user={user} closeModal={closeRef} onSubmit={onSubmit} />
+        <Card>
+          <TopHeader backGroundColor={FadedRed}>Remove User</TopHeader>
+          <Content>
+            Are you sure you want to delete {first_name} {last_name}?
+            <CButton onClick={submit}>Delete</CButton>
+          </Content>
+        </Card>
       }
     >
       {children}

@@ -15,14 +15,18 @@ export interface Player {
   id: number;
   user: User;
   status: string;
+  pending_action: string;
   public_role: string;
+  conversation_id: number;
+  secret_special_role?: string;
 }
 
 export interface Message {
   id: number;
   text: string;
+  name: string;
+  api_user_id: number;
   conference_id: number;
-  user: User;
 }
 
 export interface Room {

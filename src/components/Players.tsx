@@ -1,12 +1,10 @@
 import React, { useContext, useState, useEffect, useRef } from "react";
-import styled, { css } from "styled-components";
-import { CenteredContent, OverlayCss } from "styles/common";
+import styled from "styled-components";
 
-import Card from "components/common/Card";
 import { Player } from "interfaces";
 import CableContext from "containers/CableContext";
 import { get } from "utils/request";
-import { Blue, LightGrey } from "styles/color";
+import PlayerItem from "components/PlayerItem";
 
 const Players = ({ roomId }: { roomId: number }) => {
   const [players, setPlayers] = useState<Player[] | null>(null);
@@ -50,13 +48,7 @@ const Players = ({ roomId }: { roomId: number }) => {
 
   return (
     <Container>
-      {players &&
-        players.map((player) => (
-          <CCard>
-            <Spinner />
-            {player.user.first_name} {player.user.last_name}
-          </CCard>
-        ))}
+      {players && players.map((player) => <PlayerItem player={player} />)}
     </Container>
   );
 };
@@ -65,40 +57,6 @@ const Container = styled.div`
   display: flex;
   justify-content: space-evenly;
   padding: 20px 0;
-`;
-
-const CCard = styled(Card)`
-  min-width: 175px;
-  font-size: 24px;
-  padding: 20px;
-  position: relative;
-  flex: 0 0 auto;
-  border: 1px solid ${LightGrey};
-  ${CenteredContent}
-`;
-
-const Spinner = styled.div`
-  ${OverlayCss}
-  ${CenteredContent}
-
-  &:before {
-    content: "";
-    border: 5px solid ${LightGrey};
-    border-top: 5px solid ${Blue};
-    border-radius: 50%;
-    width: 20px;
-    height: 20px;
-    animation: spin 1s linear infinite;
-
-    @keyframes spin {
-      0% {
-        transform: rotate(0deg);
-      }
-      100% {
-        transform: rotate(360deg);
-      }
-    }
-  }
 `;
 
 export default Players;

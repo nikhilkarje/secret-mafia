@@ -8,7 +8,7 @@ class PlayersChannel < ApplicationCable::Channel
       return
     end
 
-    broadcast_message({ :conversation_id => conversation.id, :api_user_id => 1, :text => "#{current_user.first_name} #{current_user.last_name} just joined the game" })
+    broadcast_message({ :conversation_id => conversation.id, :api_user_id => 6, :text => "#{current_user.first_name} #{current_user.last_name} just joined the game" })
     player = Channel::Player.find_by(:conversation_id => conversation.id, :api_user_id => current_user.id)
     player.setStatus("active")
     player.broadcast
@@ -19,6 +19,6 @@ class PlayersChannel < ApplicationCable::Channel
     conversation = Channel::Conversation.find(params[:conversation])
     player = Channel::Player.find_by(:conversation_id => conversation.id, :api_user_id => current_user.id)
     player.setStatus("logged_out")
-    broadcast_message({ :conversation_id => conversation.id, :api_user_id => 1, :text => "#{current_user.first_name} #{current_user.last_name} just left the game" })
+    broadcast_message({ :conversation_id => conversation.id, :api_user_id => 6, :text => "#{current_user.first_name} #{current_user.last_name} just left the game" })
   end
 end

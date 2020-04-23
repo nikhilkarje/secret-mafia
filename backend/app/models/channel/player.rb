@@ -9,6 +9,7 @@ class Channel::Player < ApplicationRecord
   def setStatus(status)
     self.status = Channel::Player.status_option[status]
     self.save
+    PlayerUpdateChannel.broadcast_to self, Channel::PlayerSerializer.new(self)
   end
 
   def broadcast

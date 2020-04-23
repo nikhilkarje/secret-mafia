@@ -73,7 +73,9 @@ export default function ChatRoom() {
                   <NameSpan>
                     {message.user.first_name} {message.user.last_name}:
                   </NameSpan>
-                  <MessageSpan>{message.text}</MessageSpan>
+                  <MessageSpan isAdmin={message.user.id === 6}>
+                    {message.text}
+                  </MessageSpan>
                 </ChatWrapper>
               ))}
             </Content>
@@ -117,22 +119,13 @@ const NameSpan = styled.span`
 `;
 
 const MessageSpan = styled.span<{
-  colorCode?: string;
+  isAdmin?: boolean;
 }>`
   padding-left: 10px;
   font-weight: 200;
-  ${({ colorCode }) => {
-    if (!colorCode) {
-      return "";
-    }
-    if (colorCode === "1") {
-      return css`
-        color: ${Green};
-      `;
-    } else if (colorCode === "2") {
-      return css`
-        color: ${BrightRed};
-      `;
-    }
-  }}
+  ${({ isAdmin }) =>
+    isAdmin &&
+    css`
+      color: ${BrightRed};
+    `}
 `;

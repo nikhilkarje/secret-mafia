@@ -10,6 +10,9 @@ class Channel::PlayersController < Channel::ConversationsController
     if !player && conversation.players_joined < conversation.total_players
       player = Channel::Player.new({ :conversation_id => conversation.id, :api_user_id => session[:user_id] })
       if player.save && conversation.increment_joined
+        if conversation.players_joined == conversation.total_players
+          GameWorkerJob.perform_later("start_game", Channel::ConversationSerializer.new(conversation).attributes)
+        end
         render json: player
         return
       end

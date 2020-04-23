@@ -6,4 +6,9 @@ class Channel::Conversation < ApplicationRecord
     self.players_joined += 1
     self.save
   end
+
+  def decrement_joined
+    self.players_joined -= 1
+    self.save
+  end
 end

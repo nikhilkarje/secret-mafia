@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_04_22_171123) do
+ActiveRecord::Schema.define(version: 2020_04_23_094252) do
 
   create_table "api_users", force: :cascade do |t|
     t.string "first_name"
@@ -48,6 +48,7 @@ ActiveRecord::Schema.define(version: 2020_04_22_171123) do
     t.integer "api_user_id", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.string "pending_action", default: "none", null: false
     t.index ["api_user_id"], name: "index_players_on_api_user_id"
     t.index ["conversation_id"], name: "index_players_on_conversation_id"
   end

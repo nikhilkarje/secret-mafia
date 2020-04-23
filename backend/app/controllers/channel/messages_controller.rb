@@ -1,5 +1,5 @@
 class Channel::MessagesController < ApplicationController
-  include ApplicationHelper
+  include Channel::MessagesHelper
 
   def show
     messages = Channel::Conversation.all

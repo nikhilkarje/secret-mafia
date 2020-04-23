@@ -6,10 +6,15 @@ import Card from "components/common/Card";
 import { Player } from "interfaces";
 import CableContext from "containers/CableContext";
 import { Blue, LightGrey } from "styles/color";
+import ConfigContext from "containers/ConfigContext";
+import RoleConfirmModal from "components/RoleConfirmModal";
+import ChancellorConfirmModal from "components/ChancellorConfirmModal";
 
 const PlayerItem = ({ player }: { player: Player }) => {
   const [playerItem, setPlayerItem] = useState<Player>(player);
   const { cable } = useContext(CableContext);
+  const { config } = useContext(ConfigContext);
+  const isCurrentPlayer = player.user.id === config.user_id;
 
   const handleReceivedConversation = (data: Player) => {
     setPlayerItem(data);
@@ -29,11 +34,19 @@ const PlayerItem = ({ player }: { player: Player }) => {
   }, []);
 
   return (
-    <CCard>
-      {(playerItem.status === "logged_out" ||
-        playerItem.pending_action !== "none") && <Spinner />}
-      {playerItem.user.first_name} {playerItem.user.last_name}
-    </CCard>
+    <>
+      <CCard>
+        {(playerItem.status === "logged_out" ||
+          playerItem.pending_action !== "none") && <Spinner />}
+        {playerItem.user.first_name} {playerItem.user.last_name}
+      </CCard>
+      {isCurrentPlayer && playerItem.pending_action === "confirm_role" && (
+        <RoleConfirmModal player={player} />
+      )}
+      {isCurrentPlayer && playerItem.pending_action === "choose_chancellor" && (
+        <ChancellorConfirmModal player={player} />
+      )}
+    </>
   );
 };
 

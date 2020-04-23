@@ -4,7 +4,7 @@ class ApplicationController < ActionController::Base
 
   def index
     bootstrap_javascript
-    player = Channel::Player.find_by(:api_user_id => session[:user_id])
+    player = Api::Player.find_by(:user_id => session[:user_id])
     if player
       redirect_to "/room/#{player.conversation_id}"
       return
@@ -14,12 +14,17 @@ class ApplicationController < ActionController::Base
 
   def room
     bootstrap_javascript
-    player = Channel::Player.find_by(:conversation_id => params[:room_id], :api_user_id => session[:user_id])
+    player = Api::Player.find_by(:conversation_id => params[:room_id], :user_id => session[:user_id])
     if player
       render :index, :layout => false
     else
       redirect_to root_path
     end
+  end
+
+  def test
+    conversation = Api::Conversation.find(1)
+    GameWorkerJob.perform_now("start_election", Api::ConversationSerializer.new(conversation).attributes)
   end
 
   def admin

@@ -21,7 +21,7 @@ export default function RoomList() {
   const { cable } = useContext(CableContext);
 
   const fetchRooms = () => {
-    get("/channel/conversations")
+    get("/api/conversations")
       .then((response) => response.json())
       .then((data) => setRooms(data));
   };
@@ -33,7 +33,7 @@ export default function RoomList() {
   };
 
   const joinRoom = async (roomId: number) => {
-    const response = await post(`/channel/conversations/${roomId}/players`, {});
+    const response = await post(`/api/conversations/${roomId}/players`, {});
     if (response.ok) {
       const data = await response.json();
       window.location.href = `/room/${roomId}`;

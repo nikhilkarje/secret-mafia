@@ -1,4 +1,4 @@
-require 'test_helper'
+require "test_helper"
 
 class Api::UsersControllerTest < ActionDispatch::IntegrationTest
   setup do
@@ -16,7 +16,7 @@ class Api::UsersControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should create api_user" do
-    assert_difference('Api::User.count') do
+    assert_difference("Api::User.count") do
       post api_users_url, params: { api_user: { email: @api_user.email, first_name: @api_user.first_name, last_name: @api_user.last_name, password_digest: @api_user.password_digest } }
     end
 
@@ -39,7 +39,7 @@ class Api::UsersControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should destroy api_user" do
-    assert_difference('Api::User.count', -1) do
+    assert_difference("Api::User.count", -1) do
       delete api_user_url(@api_user)
     end
 

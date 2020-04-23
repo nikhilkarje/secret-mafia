@@ -1,4 +1,4 @@
-class Channel::ConversationSerializer < ActiveModel::Serializer
+class Api::ConversationSerializer < ActiveModel::Serializer
   attributes :id, :title, :players_joined, :total_players
   has_many :messages, if: -> { should_render_association }
 

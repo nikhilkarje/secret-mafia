@@ -31,8 +31,8 @@ const ChatBox = ({ id }: { id: number }) => {
     if (validate()) {
       return;
     }
-    const response = await post(`/channel/messages`, {
-      api_user_id: user_id,
+    const response = await post(`/api/messages`, {
+      user_id: user_id,
       conversation_id: id,
       text,
     });

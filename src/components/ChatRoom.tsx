@@ -25,7 +25,7 @@ export default function ChatRoom() {
   };
 
   const fetchMessages = () => {
-    get(`/channel/conversations/${roomId}`)
+    get(`/api/conversations/${roomId}`)
       .then((response) => response.json())
       .then((data) => {
         const { messages, ...room } = data;
@@ -71,7 +71,7 @@ export default function ChatRoom() {
               {messages.map((message) => (
                 <ChatWrapper key={message.id}>
                   <NameSpan>{message.name}</NameSpan>
-                  <MessageSpan isAdmin={message.api_user_id === 6}>
+                  <MessageSpan isAdmin={message.user_id === 6}>
                     {message.text}
                   </MessageSpan>
                 </ChatWrapper>

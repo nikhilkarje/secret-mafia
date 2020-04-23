@@ -1,6 +1,6 @@
-require 'test_helper'
+require "test_helper"
 
-class Channel::PlayerTest < ActiveSupport::TestCase
+class Api::PlayerTest < ActiveSupport::TestCase
   # test "the truth" do
   #   assert true
   # end

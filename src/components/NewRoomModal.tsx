@@ -32,7 +32,7 @@ const NewRoomForm = ({ modalControlRef }: { modalControlRef?: any }) => {
     if (validate()) {
       return;
     }
-    const response = await post("/channel/conversations", { title });
+    const response = await post("/api/conversations", { title });
     if (modalControlRef.current) {
       modalControlRef.current.removeModal();
     }

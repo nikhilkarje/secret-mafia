@@ -25,7 +25,7 @@ export interface Message {
   id: number;
   text: string;
   name: string;
-  api_user_id: number;
+  user_id: number;
   conference_id: number;
 }
 

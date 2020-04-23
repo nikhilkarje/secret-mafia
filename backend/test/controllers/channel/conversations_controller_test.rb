@@ -1,6 +1,6 @@
-require 'test_helper'
+require "test_helper"
 
-class Channel::ConversationsControllerTest < ActionDispatch::IntegrationTest
+class Api::ConversationsControllerTest < ActionDispatch::IntegrationTest
   # test "the truth" do
   #   assert true
   # end

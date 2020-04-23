@@ -1,5 +1,5 @@
 class ChangeApiUsersColumnInPlayers < ActiveRecord::Migration[6.0]
   def change
-    rename_column :players, :api_users_id, :api_user_id
+    rename_column :players, :api_users_id, :user_id
   end
 end

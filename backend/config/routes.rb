@@ -1,8 +1,6 @@
 Rails.application.routes.draw do
   namespace :api do
     resources :users
-  end
-  namespace :channel do
     resources :conversations, only: [:index, :show, :create] do
       resources :players, only: [:index, :create] do
         get "/pending_action", to: "players#pending_action"
@@ -17,5 +15,6 @@ Rails.application.routes.draw do
   get "/logout", to: "sessions#destroy"
   get "/admin", to: "application#admin"
   get "/room/:room_id", to: "application#room"
+  get "/trigger", to: "application#test"
   root "application#index"
 end

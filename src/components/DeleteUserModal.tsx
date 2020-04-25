@@ -10,17 +10,14 @@ import { destroy } from "utils/request";
 import { FadedRed } from "styles/color";
 
 const DeleteUserModal = ({
-  children,
-  triggerCss,
+  modalControlRef,
   onSubmit,
   user,
 }: {
-  children: React.ReactNode;
-  triggerCss?: any;
+  modalControlRef: any;
   onSubmit?: () => void;
   user: UserListItem;
 }) => {
-  const modalControlRef = useRef(null);
   const { id, first_name, last_name } = user;
 
   const submit = async () => {
@@ -36,20 +33,14 @@ const DeleteUserModal = ({
   };
 
   return (
-    <Modal
-      ref={modalControlRef}
-      triggerCss={triggerCss}
-      content={
-        <Card>
-          <TopHeader backGroundColor={FadedRed}>Remove User</TopHeader>
-          <Content>
-            Are you sure you want to delete {first_name} {last_name}?
-            <CButton onClick={submit}>Delete</CButton>
-          </Content>
-        </Card>
-      }
-    >
-      {children}
+    <Modal ref={modalControlRef}>
+      <Card>
+        <TopHeader backGroundColor={FadedRed}>Remove User</TopHeader>
+        <Content>
+          Are you sure you want to delete {first_name} {last_name}?
+          <CButton onClick={submit}>Delete</CButton>
+        </Content>
+      </Card>
     </Modal>
   );
 };

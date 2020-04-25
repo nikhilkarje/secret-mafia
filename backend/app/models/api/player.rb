@@ -8,19 +8,16 @@ class Api::Player < ApplicationRecord
   end
 
   def self.action_option
-    { :role => "confirm_role", :president => "choose_chancellor", :default => "none" }
+    { :role => "confirm_role", :president => "choose_chancellor", :policy_draw_president => "choose_2_policies", :policy_draw_chancellor => "choose_1_policy", :vote => "vote", :default => "none" }
   end
 
   def setPendingAction(action)
     self.pending_action = Api::Player.action_option[action]
-    self.save
-    PlayerUpdateChannel.broadcast_to self, Api::PlayerSerializer.new(self)
   end
 
   def setStatus(status)
     self.status = Api::Player.status_option[status]
     self.save
-    PlayerUpdateChannel.broadcast_to self, Api::PlayerSerializer.new(self)
   end
 
   def delete
@@ -28,12 +25,10 @@ class Api::Player < ApplicationRecord
     super
   end
 
-  def broadcast_role_action
-    self.setPendingAction(:role)
-  end
-
-  def broadcast_president_action
-    self.setPendingAction(:president)
+  # TODO: Change default value from liberal to default
+  def save
+    super
+    PlayerUpdateChannel.broadcast_to self, Api::PlayerSerializer.new(self)
   end
 
   def broadcast

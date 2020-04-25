@@ -1,6 +1,5 @@
-class MessagesChannel < ApplicationCable::Channel
+class GameChannel < ApplicationCable::Channel
   def subscribed
-    # TODO: Add validation
     conversation = Api::Conversation.find(params[:conversation])
     isTeam = conversation.players.find_by(:user_id => current_user.id)
     unless isTeam

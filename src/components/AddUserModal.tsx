@@ -106,24 +106,15 @@ const AddUserForm = ({
 };
 
 const AddUserModal = ({
-  children,
-  triggerCss,
+  modalControlRef,
   onSubmit,
 }: {
-  children: React.ReactNode;
-  triggerCss?: any;
+  modalControlRef?: any;
   onSubmit?: () => void;
 }) => {
-  const modalControlRef = useRef(null);
   return (
-    <Modal
-      ref={modalControlRef}
-      triggerCss={triggerCss}
-      content={
-        <AddUserForm modalControlRef={modalControlRef} onSubmit={onSubmit} />
-      }
-    >
-      {children}
+    <Modal ref={modalControlRef}>
+      <AddUserForm modalControlRef={modalControlRef} onSubmit={onSubmit} />
     </Modal>
   );
 };

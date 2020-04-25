@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef, createRef } from "react";
 import styled, { css } from "styled-components";
 
 import { UserListItem } from "interfaces";
@@ -17,6 +17,8 @@ import { DarkGrey } from "styles/color";
 import { get } from "utils/request";
 
 export default function UserList() {
+  const modalControlRef = useRef(null);
+  const modalCollectionRef = useRef<any>({});
   const [users, setUsers] = useState<UserListItem[] | null>(null);
 
   const fetchUsers = () => {
@@ -29,13 +31,24 @@ export default function UserList() {
     fetchUsers();
   }, []);
 
+  useEffect(() => {
+    if (users) {
+      users.map((user) => {
+        modalCollectionRef.current[`editModalRef${user.id}`] = createRef();
+        modalCollectionRef.current[`deleteModalRef${user.id}`] = createRef();
+      });
+    }
+  }, [users]);
+
   return (
     <CCard>
       <CTopHeader>
         Users List
-        <AddUserModal triggerCss={IconPosCss} onSubmit={fetchUsers}>
-          <Add iconCss={AddIconCss} />
-        </AddUserModal>
+        <AddUserModal modalControlRef={modalControlRef} onSubmit={fetchUsers} />
+        <Add
+          onClick={modalControlRef.current.addModal()}
+          iconCss={AddIconCss}
+        />
       </CTopHeader>
       <Table>
         <TableRow>
@@ -51,12 +64,36 @@ export default function UserList() {
               <TableData>{`${user.first_name} ${user.last_name}`}</TableData>
               <TableData>{user.email}</TableData>
               <TableData>
-                <EditUserModal user={user} onSubmit={fetchUsers}>
-                  <Edit iconCss={EditIconCss} />
-                </EditUserModal>
-                <DeleteUserModal user={user} onSubmit={fetchUsers}>
-                  <Delete iconCss={EditIconCss} />
-                </DeleteUserModal>
+                <Edit
+                  onClick={() =>
+                    modalCollectionRef.current[
+                      `editModalRef${user.id}`
+                    ].current.addModal()
+                  }
+                  iconCss={EditIconCss}
+                />
+                <EditUserModal
+                  modalControlRef={
+                    modalCollectionRef.current[`editModalRef${user.id}`]
+                  }
+                  user={user}
+                  onSubmit={fetchUsers}
+                />
+                <Delete
+                  onClick={() =>
+                    modalCollectionRef.current[
+                      `deleteModalRef${user.id}`
+                    ].current.addModal()
+                  }
+                  iconCss={EditIconCss}
+                />
+                <DeleteUserModal
+                  modalControlRef={
+                    modalCollectionRef.current[`deleteModalRef${user.id}`]
+                  }
+                  user={user}
+                  onSubmit={fetchUsers}
+                ></DeleteUserModal>
               </TableData>
             </TableRow>
           ))}

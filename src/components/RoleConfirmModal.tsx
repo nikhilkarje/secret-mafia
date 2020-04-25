@@ -88,32 +88,28 @@ const RoleConfirmModal = ({ player }: { player: Player }) => {
 
   return (
     controlData.loaded && (
-      <Modal
-        ref={modalTriggerRef}
-        hideClose
-        content={
-          <Card>
-            <Container>
-              <div>{controlData.message}</div>
-              {controlData.players && (
-                <Content>
-                  {controlData.players.map((player) => (
-                    <CCard key={player.id}>
-                      <div>
-                        {player.user.first_name} {player.user.last_name}
-                      </div>
-                      {player.secret_special_role === "hitler" && (
-                        <RedSpan>(Secret Hitler)</RedSpan>
-                      )}
-                    </CCard>
-                  ))}
-                </Content>
-              )}
-              <CButton onClick={submit}>Confirm</CButton>
-            </Container>
-          </Card>
-        }
-      />
+      <Modal ref={modalTriggerRef} hideClose>
+        <Card>
+          <Container>
+            <div>{controlData.message}</div>
+            {controlData.players && (
+              <Content>
+                {controlData.players.map((player) => (
+                  <CCard key={player.id}>
+                    <div>
+                      {player.user.first_name} {player.user.last_name}
+                    </div>
+                    {player.secret_special_role === "hitler" && (
+                      <RedSpan>(Secret Hitler)</RedSpan>
+                    )}
+                  </CCard>
+                ))}
+              </Content>
+            )}
+            <CButton onClick={submit}>Confirm</CButton>
+          </Container>
+        </Card>
+      </Modal>
     )
   );
 };

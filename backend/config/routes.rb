@@ -5,6 +5,10 @@ Rails.application.routes.draw do
       resources :players, only: [:index, :create] do
         get "/pending_action", to: "players#pending_action"
         post "/confirm_role", to: "players#confirm_role"
+        post "/confirm_chancellor", to: "players#confirm_chancellor"
+        post "/cast_vote", to: "players#cast_vote"
+        post "/presidential_policy", to: "players#presidential_policy"
+        post "/chancellor_policy", to: "players#chancellor_policy"
       end
     end
     resources :messages, only: [:create]

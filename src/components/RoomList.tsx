@@ -18,6 +18,7 @@ import { get, post } from "utils/request";
 export default function RoomList() {
   const [rooms, setRooms] = useState<Room[] | null>(null);
   const roomsRef = useRef(null);
+  const modalControlRef = useRef(null);
   const { cable } = useContext(CableContext);
 
   const fetchRooms = () => {
@@ -63,9 +64,11 @@ export default function RoomList() {
     <CCard>
       <CTopHeader>
         Chat Rooms
-        <NewRoomModal triggerCss={IconPosCss} onSubmit={fetchRooms}>
-          <Add iconCss={AddIconCss} />
-        </NewRoomModal>
+        <Add
+          onClick={() => modalControlRef.current.addModal()}
+          iconCss={AddIconCss}
+        />
+        <NewRoomModal modalControlRef={modalControlRef}></NewRoomModal>
       </CTopHeader>
       <Table>
         <TableRow>

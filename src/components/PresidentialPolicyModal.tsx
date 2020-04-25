@@ -11,40 +11,50 @@ import { CenteredContent } from "styles/common";
 interface ControlData {
   loaded: boolean;
   message?: string;
-  players?: Player[];
+  policies?: string[];
 }
 
 interface DataType {
   type: string;
-  data: Player[];
+  data: string;
 }
 
-const ChancellorConfirmModal = ({ player }: { player: Player }) => {
+const PresidentialPolicyModal = ({ player }: { player: Player }) => {
   const modalTriggerRef = useRef(null);
   const [controlData, setControlData] = useState<ControlData>({
     loaded: false,
   });
-  const [chancellorId, setChancellorId] = useState<number>(0);
+  const [selected, setSelected] = useState<number[]>([]);
 
   const submit = async () => {
-    if (!chancellorId) {
+    if (!selected) {
       return;
     }
+    const policy =
+      controlData.policies[selected[0]] + controlData.policies[selected[1]];
     const response = await post(
-      `/api/conversations/${player.conversation_id}/players/${player.id}/confirm_chancellor`,
-      { chancellor_id: chancellorId }
+      `/api/conversations/${player.conversation_id}/players/${player.id}/presidential_policy`,
+      { policy }
     );
     if (modalTriggerRef.current) {
       modalTriggerRef.current.removeModal();
     }
   };
 
+  const updateSelected = (index: number) => {
+    let updatedValue = [...selected, index];
+    if (updatedValue.length > 2) {
+      updatedValue.shift();
+    }
+    setSelected(updatedValue);
+  };
+
   const handleActionData = (data: DataType) => {
+    const policies = data.data.split("");
     setControlData({
       loaded: true,
-      message:
-        "You must nominate a Chancellor for this election. You may discuss it over with the legislative assembly, before making this decision.",
-      players: data.data,
+      policies,
+      message: "Choose the policies to pass on to the Chancellor.",
     });
   };
 
@@ -72,16 +82,16 @@ const ChancellorConfirmModal = ({ player }: { player: Player }) => {
         <Card>
           <Container>
             <div>{controlData.message}</div>
-            {controlData.players && (
+            {controlData.policies && (
               <Content>
-                {controlData.players.map((player) => (
-                  <CardWrapper key={player.id}>
+                {controlData.policies.map((policy, index) => (
+                  <CardWrapper key={index}>
                     <MiniCard
                       isSelectable={true}
-                      isActive={chancellorId === player.id}
-                      onClick={() => setChancellorId(player.id)}
+                      isActive={selected.indexOf(index) !== -1}
+                      onClick={() => updateSelected(index)}
                     >
-                      {player.user.first_name} {player.user.last_name}
+                      {policy === "0" ? "Liberal" : "Facist"}
                     </MiniCard>
                   </CardWrapper>
                 ))}
@@ -90,7 +100,6 @@ const ChancellorConfirmModal = ({ player }: { player: Player }) => {
             <CButton onClick={() => submit()}>Confirm</CButton>
           </Container>
         </Card>
-        }
       </Modal>
     )
   );
@@ -117,4 +126,4 @@ const CButton = styled(Button)`
   margin-top: 20px;
 `;
 
-export default ChancellorConfirmModal;
+export default PresidentialPolicyModal;

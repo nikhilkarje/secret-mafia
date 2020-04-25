@@ -1,10 +1,4 @@
-import React, {
-  useRef,
-  useImperativeHandle,
-  forwardRef,
-  useEffect,
-} from "react";
-import ReactDOM from "react-dom";
+import React, { useImperativeHandle, forwardRef, useState } from "react";
 import styled, { css } from "styled-components";
 
 import { CenteredContent } from "styles/common";
@@ -41,56 +35,34 @@ const Modal = forwardRef(
   (
     {
       children,
-      content,
       hideClose,
-      triggerCss,
       onOpen,
       onClose,
     }: {
       children?: React.ReactNode;
-      content: React.ReactNode;
       hideClose?: boolean;
-      triggerCss?: any;
       onOpen?: () => any;
       onClose?: () => any;
     },
     ref
   ) => {
-    const modalContainer = useRef(null);
-
-    const mountComponent = () => {
-      modalContainer.current = document.createElement("div");
-      document.body.appendChild(modalContainer.current);
-
-      ReactDOM.render(
-        <ModalLayout hideClose={hideClose} closeModal={removeModal}>
-          {content}
-        </ModalLayout>,
-        modalContainer.current
-      );
-    };
-
-    const unmountComponent = () => {
-      if (modalContainer.current) {
-        ReactDOM.unmountComponentAtNode(modalContainer.current);
-        if (document.body.contains(modalContainer.current)) {
-          document.body.removeChild(modalContainer.current);
-        }
-        modalContainer.current = null;
-      }
-    };
+    const [open, setOpen] = useState<boolean>(false);
 
     const addModal = () => {
-      mountComponent();
-      if (onOpen) {
-        onOpen();
+      if (!open) {
+        setOpen(true);
+        if (onOpen) {
+          onOpen();
+        }
       }
     };
 
     const removeModal = () => {
-      unmountComponent();
-      if (onClose) {
-        onClose();
+      if (open) {
+        setOpen(false);
+        if (onClose) {
+          onClose();
+        }
       }
     };
 
@@ -102,11 +74,18 @@ const Modal = forwardRef(
       []
     );
 
-    return children ? (
-      <TriggerContainer triggerCss={triggerCss} onClick={addModal}>
-        {children}
-      </TriggerContainer>
-    ) : null;
+    return (
+      open && (
+        <ModalLayout hideClose={hideClose} closeModal={removeModal}>
+          {children}
+        </ModalLayout>
+      )
+    );
+    // return children ? (
+    //   <TriggerContainer triggerCss={triggerCss} onClick={addModal}>
+    //     {children}
+    //   </TriggerContainer>
+    // ) : null;
   }
 );
 

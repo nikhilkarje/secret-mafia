@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 
 import Card from "components/common/Card";
@@ -56,22 +56,10 @@ const NewRoomForm = ({ modalControlRef }: { modalControlRef?: any }) => {
   );
 };
 
-const NewRoomModal = ({
-  children,
-  triggerCss,
-}: {
-  children: React.ReactNode;
-  triggerCss?: any;
-  onSubmit?: () => void;
-}) => {
-  const modalControlRef = useRef(null);
+const NewRoomModal = ({ modalControlRef }: { modalControlRef: any }) => {
   return (
-    <Modal
-      ref={modalControlRef}
-      triggerCss={triggerCss}
-      content={<NewRoomForm modalControlRef={modalControlRef} />}
-    >
-      {children}
+    <Modal ref={modalControlRef}>
+      <NewRoomForm modalControlRef={modalControlRef} />
     </Modal>
   );
 };

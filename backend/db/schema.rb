@@ -11,7 +11,6 @@
 # It's strongly recommended that you check this file into your version control system.
 
 ActiveRecord::Schema.define(version: 2020_04_23_231104) do
-
   create_table "conversations", force: :cascade do |t|
     t.string "title"
     t.datetime "created_at", precision: 6, null: false
@@ -20,6 +19,7 @@ ActiveRecord::Schema.define(version: 2020_04_23_231104) do
     t.integer "players_joined", default: 0, null: false
   end
 
+  # TODO: Remove policy_discarded, policy_status
   create_table "elections", force: :cascade do |t|
     t.integer "president", null: false
     t.integer "chancellor"
@@ -78,6 +78,7 @@ ActiveRecord::Schema.define(version: 2020_04_23_231104) do
     t.datetime "updated_at", precision: 6, null: false
   end
 
+  # TODO: election_id needs to be unique
   create_table "votes", force: :cascade do |t|
     t.boolean "ballot", null: false
     t.integer "player_id", null: false

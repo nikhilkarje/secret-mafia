@@ -105,30 +105,21 @@ const EditUserForm = ({
 };
 
 const EditUserModal = ({
-  children,
-  triggerCss,
   onSubmit,
   user,
+  modalControlRef,
 }: {
-  children: React.ReactNode;
-  triggerCss?: any;
   onSubmit?: () => void;
   user: UserListItem;
+  modalControlRef: any;
 }) => {
-  const modalControlRef = useRef(null);
   return (
-    <Modal
-      ref={modalControlRef}
-      triggerCss={triggerCss}
-      content={
-        <EditUserForm
-          user={user}
-          modalControlRef={modalControlRef}
-          onSubmit={onSubmit}
-        />
-      }
-    >
-      {children}
+    <Modal ref={modalControlRef}>
+      <EditUserForm
+        user={user}
+        modalControlRef={modalControlRef}
+        onSubmit={onSubmit}
+      />
     </Modal>
   );
 };

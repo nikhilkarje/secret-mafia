@@ -1,5 +1,6 @@
 class GameWorkerJob < ApplicationJob
   include Api::MessagesHelper
+  include Api::ConversationsHelper
   queue_as :default
 
   def start_game_validate
@@ -10,14 +11,6 @@ class GameWorkerJob < ApplicationJob
       return false
     end
     return true
-  end
-
-  def rand_n(n, max)
-    randoms = Set.new
-    loop do
-      randoms << rand(max)
-      return randoms.to_a if randoms.size == n
-    end
   end
 
   def assign_roles
@@ -44,13 +37,6 @@ class GameWorkerJob < ApplicationJob
     end
   end
 
-  def generate_policy_order(n = 6, max = 17)
-    liberal_indexes = rand_n(n, max)
-    policy_order = ""
-    max.times { |index| policy_order += liberal_indexes.include?(index) ? "0" : "1" }
-    policy_order
-  end
-
   def start_election
     elections = @game.elections
     if elections.length
@@ -58,7 +44,7 @@ class GameWorkerJob < ApplicationJob
     end
     if !last_election
       president_index = rand_n(1, conversation.total_players)
-      # current_president = @players[president_index]
+      current_president = @players[president_index]
     else
       last_president = Api::Player.find(last_election.president)
       last_chancellor = Api::Player.find(last_election.chancellor)
@@ -66,13 +52,12 @@ class GameWorkerJob < ApplicationJob
       last_chancellor.public_role = "default"
       last_president.save
       last_chancellor.save
-      # current_president = last_president.next
+      current_president = last_president.next
     end
-    current_president = Api::Player.find(1)
+    # current_president = Api::Player.find(1)
     election = Api::Election.new({ :game_id => @game.id, :president => current_president.id })
     election.save
-    president_user = current_president.user
-    broadcast_room_message(@payload[:id], "#{president_user.first_name} #{president_user.last_name} is the new President candidate")
+    broadcast_room_message(@payload[:id], "#{current_president.name} is the new President candidate")
     current_president.public_role = "president"
     current_president.setPendingAction(:president)
     current_president.save
@@ -99,10 +84,6 @@ class GameWorkerJob < ApplicationJob
       end
     when "start_election"
       @game = @conversation.game
-      if !@game
-        @game = Api::Game.new({ :conversation_id => @conversation.id, :policy_order => generate_policy_order })
-        @game.save
-      end
       start_election
     when "start_voting"
       @players.each do |player|
@@ -117,12 +98,15 @@ class GameWorkerJob < ApplicationJob
       total_nayes = votes.where(:ballot => false)
       broadcast_room_message(@payload[:id], "Election results are in")
       total_ayes.each do |vote|
-        user = vote.player.user
-        broadcast_room_message(@payload[:id], "#{user.first_name} #{user.last_name} voted Ja")
+        player = vote.player
+        broadcast_room_message(@payload[:id], "#{player.name} voted Ja")
       end
       total_nayes.each do |vote|
-        user = vote.player.user
-        broadcast_room_message(@payload[:id], "#{user.first_name} #{user.last_name} voted Nein")
+        player = vote.player
+        broadcast_room_message(@payload[:id], "#{player.name} voted Nein")
+      end
+      if @game.policy_order.length < 3
+        reorder_policy
       end
       if total_ayes.length > total_nayes.length
         broadcast_room_message(@payload[:id], "The proposed government is established. Assembly is now in session")
@@ -130,9 +114,7 @@ class GameWorkerJob < ApplicationJob
           @game.election_tracker = 0
         end
         election.election_status = "session"
-        if @game.policy_order.length < 3
-          reorder_policy
-        end
+
         election.policy_draw = @game.policy_order[0..2]
         @game.policy_order = @game.policy_order[3..-1]
         president = @players.find(election.president)
@@ -145,8 +127,12 @@ class GameWorkerJob < ApplicationJob
         @game.election_tracker += 1
         election.election_status = "failed"
         broadcast_room_message(@payload[:id], "The proposed government has failed")
-        # TODO: Implement doomsday
-
+        if @game.election_tracker >= 3
+          @game.election_tracker = 0
+          @game.policy_passed = @game.policy_order[0]
+          @game.policy_order = @game.policy_order[1..-1]
+          broadcast_room_message(@payload[:id], "Three elections failed in a row. Frustrated populace enacted a #{@game.policy_passed == "0" ? "Liberal" : "Facist"} policy")
+        end
         @game.save
         election.save
         start_election

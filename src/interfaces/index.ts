@@ -13,11 +13,12 @@ export interface User {
 
 export interface Player {
   id: number;
-  user: User;
+  user_id: number;
+  conversation_id: number;
+  name: String;
   status: string;
   pending_action: string;
   public_role: string;
-  conversation_id: number;
   secret_special_role?: string;
 }
 
@@ -34,6 +35,15 @@ export interface Room {
   title: string;
   players_joined: number;
   total_players: number;
+}
+
+export interface Game {
+  id: number;
+  election_tracker: number;
+  draw_pile: number;
+  discard_pile: number;
+  liberal_policy: number;
+  facist_policy: number;
 }
 
 export interface EditUserForm {

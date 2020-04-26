@@ -28,27 +28,26 @@ class Api::Player < ApplicationRecord
   # TODO: Change default value from liberal to default
   def save
     super
-    PlayerUpdateChannel.broadcast_to self, Api::PlayerSerializer.new(self)
+    PlayersChannel.broadcast_to self.conversation, { :type => "update", :data => Api::PlayerSerializer.new(self) }
   end
 
   def broadcast
-    unless @conversation
-      @conversation = Api::Conversation.find(self.conversation_id)
-    end
-    PlayersChannel.broadcast_to @conversation, Api::PlayerSerializer.new(self)
+    PlayersChannel.broadcast_to self.conversation, { :type => "new", :data => Api::PlayerSerializer.new(self) }
   end
 
   def next
-    player = self.class.where("conversation_id=? AND id > ?", conversation_id, id).first
+    player = Api::Player.where("conversation_id=? AND id > ?", conversation_id, id).first
     if !player
-      player = self.class.where(:conversation_id => conversation_id).first
+      player = Api::Player.where(:conversation_id => conversation_id).first
     end
+    player
   end
 
   def previous
-    player = self.class.where("conversation_id=? AND id < ?", conversation_id, id).last
+    player = Api::Player.where("conversation_id=? AND id < ?", conversation_id, id).last
     if !player
-      player = self.class.where(:conversation_id => conversation_id).last
+      player = Api::Player.where(:conversation_id => conversation_id).last
     end
+    player
   end
 end

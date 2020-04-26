@@ -14,56 +14,35 @@ import PresidentialPolicyModal from "components/PresidentialPolicyModal";
 import ChancellorPolicyModal from "components/ChancellorPolicyModal";
 
 const PlayerItem = ({ player }: { player: Player }) => {
-  const [playerItem, setPlayerItem] = useState<Player>(player);
-  const { cable } = useContext(CableContext);
   const { config } = useContext(ConfigContext);
-  const isCurrentPlayer = player.user.id === config.user_id;
-
-  const handleReceivedConversation = (data: Player) => {
-    setPlayerItem(data);
-  };
-
-  useEffect(() => {
-    cable.subscriptions.create(
-      { channel: "PlayerUpdateChannel", player: player.id },
-      {
-        received: (response) => {
-          handleReceivedConversation(response as Player);
-        },
-        connected: () => {},
-        disconnected: () => {},
-      }
-    );
-  }, []);
+  const isCurrentPlayer = player.user_id === config.user_id;
 
   return (
     <>
       <CardWrapper>
         <MiniCard>
-          {(playerItem.status === "logged_out" ||
-            playerItem.pending_action !== "none") && <Spinner />}
-          {playerItem.user.first_name} {playerItem.user.last_name}
+          {(player.status === "logged_out" ||
+            player.pending_action !== "none") && <Spinner />}
+          {player.name}
         </MiniCard>
-        {playerItem.public_role === "president" && (
-          <PMiniCard>President</PMiniCard>
-        )}
-        {playerItem.public_role === "chancellor" && (
+        {player.public_role === "president" && <PMiniCard>President</PMiniCard>}
+        {player.public_role === "chancellor" && (
           <PMiniCard>Chancellor</PMiniCard>
         )}
       </CardWrapper>
-      {isCurrentPlayer && playerItem.pending_action === "confirm_role" && (
+      {isCurrentPlayer && player.pending_action === "confirm_role" && (
         <RoleConfirmModal player={player} />
       )}
-      {isCurrentPlayer && playerItem.pending_action === "choose_chancellor" && (
+      {isCurrentPlayer && player.pending_action === "choose_chancellor" && (
         <ChancellorConfirmModal player={player} />
       )}
-      {isCurrentPlayer && playerItem.pending_action === "vote" && (
+      {isCurrentPlayer && player.pending_action === "vote" && (
         <BallotModal player={player} />
       )}
-      {isCurrentPlayer && playerItem.pending_action === "choose_2_policies" && (
+      {isCurrentPlayer && player.pending_action === "choose_2_policies" && (
         <PresidentialPolicyModal player={player} />
       )}
-      {isCurrentPlayer && playerItem.pending_action === "choose_1_policy" && (
+      {isCurrentPlayer && player.pending_action === "choose_1_policy" && (
         <ChancellorPolicyModal player={player} />
       )}
     </>

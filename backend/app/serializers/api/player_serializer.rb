@@ -1,10 +1,6 @@
 class Api::PlayerSerializer < ActiveModel::Serializer
-  attributes :id, :conversation_id, :user, :public_role, :status, :pending_action
+  attributes :id, :conversation_id, :name, :public_role, :status, :pending_action, :user_id
   attribute :secret_special_role, if: :should_show_secret_role
-
-  def user
-    user = Api::UserSerializer.new(object.user)
-  end
 
   def should_show_secret_role
     @instance_options[:show_hitler]

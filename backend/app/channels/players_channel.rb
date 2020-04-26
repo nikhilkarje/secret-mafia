@@ -11,7 +11,6 @@ class PlayersChannel < ApplicationCable::Channel
 
     player = Api::Player.find_by(:conversation_id => @conversation.id, :user_id => current_user.id)
     player.setStatus(:active)
-    player.broadcast
     stream_for @conversation
   end
 

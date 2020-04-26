@@ -81,7 +81,7 @@ const ChancellorConfirmModal = ({ player }: { player: Player }) => {
                       isActive={chancellorId === player.id}
                       onClick={() => setChancellorId(player.id)}
                     >
-                      {player.user.first_name} {player.user.last_name}
+                      {player.name}
                     </MiniCard>
                   </CardWrapper>
                 ))}
@@ -90,7 +90,6 @@ const ChancellorConfirmModal = ({ player }: { player: Player }) => {
             <CButton onClick={() => submit()}>Confirm</CButton>
           </Container>
         </Card>
-        }
       </Modal>
     )
   );

@@ -39,10 +39,10 @@ const BallotModal = ({ player }: { player: Player }) => {
   };
 
   const handleActionData = (data: DataType) => {
-    const user = data.data.user;
+    const name = data.data.name;
     setControlData({
       loaded: true,
-      message: `Vote for ${user.first_name} ${user.last_name} as the Chancellor.`,
+      message: `Vote for ${name} as the Chancellor.`,
     });
   };
 

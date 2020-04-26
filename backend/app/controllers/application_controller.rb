@@ -24,7 +24,7 @@ class ApplicationController < ActionController::Base
 
   def test
     conversation = Api::Conversation.find(1)
-    GameWorkerJob.perform_now("start_election", Api::ConversationSerializer.new(conversation).attributes)
+    GameWorkerJob.perform_now("election_results", Api::ConversationSerializer.new(conversation).attributes)
   end
 
   def admin

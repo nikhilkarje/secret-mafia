@@ -15,8 +15,10 @@ class Api::PlayersController < Api::ConversationsController
     if !player
       conversation = Api::Conversation.find(params[:conversation_id])
       if conversation.players_joined < conversation.total_players
-        player = Api::Player.new({ :conversation_id => conversation.id, :user_id => session[:user_id] })
+        user = Api::User.find(session[:user_id])
+        player = Api::Player.new({ :conversation_id => conversation.id, :user_id => session[:user_id], :name => "#{user.first_name} #{user.last_name}" })
         if player.save && conversation.increment_joined
+          player.broadcast
           if conversation.players_joined == conversation.total_players
             GameWorkerJob.perform_now("start_game", Api::ConversationSerializer.new(conversation).attributes)
           end
@@ -45,12 +47,15 @@ class Api::PlayersController < Api::ConversationsController
       when Api::Player.action_option[:president]
         conversation = @player.conversation
         game = conversation.game
-        last_election = game.elections.where(:election_status => "passed").last
+        last_passed_election = game.elections.where(:election_status => "passed").last
+        last_failed_election = game.elections.where(:election_status => "failed").offset(2).first
         players = conversation.players
         inelligible_players = [@player.id]
-        if last_election
-          inelligible_players << last_election.president
-          inelligible_players << last_election.chancellor
+        if last_passed_election && (!last_failed_election || last_failed_election.id < last_passed_election.id)
+          inelligible_players << last_passed_election.chancellor
+          if conversation.total_players > 5
+            inelligible_players << last_passed_election.president
+          end
         end
         elligible_players = []
         players.each do |player|
@@ -101,13 +106,13 @@ class Api::PlayersController < Api::ConversationsController
       chancellor = conversation.players.find(params[:chancellor_id]) if params[:chancellor_id]
       election = conversation.game.elections.find_by(:election_status => "active")
       if chancellor && election
+        election.chancellor = chancellor.id
         election.save
         chancellor.public_role = "chancellor"
         chancellor.save
-        chancellor_user = chancellor.user
         @player.setPendingAction(:default)
         @player.save
-        broadcast_room_message(conversation.id, "#{chancellor_user.first_name} #{chancellor_user.last_name} is nominated for Chancellor. Voting will now begin.")
+        broadcast_room_message(conversation.id, "#{chancellor.name} is nominated for Chancellor. Voting will now begin.")
         GameWorkerJob.perform_now("start_voting", Api::ConversationSerializer.new(conversation).attributes)
         render json: {}, status: 200
         return
@@ -140,18 +145,49 @@ class Api::PlayersController < Api::ConversationsController
   def presidential_policy
     if @player
       conversation = @player.conversation
-      election = conversation.game.elections.find_by(:election_status => "session")
-      policy_draw = election.policy_draw
-      policy = params[:policy]
-      if policy && policy.length == 2 && policy.count("01") == policy.size && policy_draw.count("0") >= policy.count("0") && policy_draw.count("1") >= policy.count("1")
-        election.policy_picked = policy
-        @player.setPendingAction(:default)
-        chancellor = Api::Player.find(election.chancellor)
-        chancellor.setPendingAction(:policy_draw_chancellor)
-        election.save
-        @player.save
-        chancellor.save
-        broadcast_room_message(conversation.id, "The chancellor is picking one policy to pass out of two")
+      @game = conversation.game
+      @election = @game.elections.find_by(:election_status => "session")
+      if @player.id == @election.president
+        policy_draw = @election.policy_draw
+        policy = params[:policy]
+        discarded_policy = policy_draw.slice!(policy[0]) && policy_draw.slice!(policy[1])
+        if policy && policy.length == 2 && policy.count("01") == 2 && discarded_policy && discarded_policy.length == 1
+          @election.policy_picked = policy
+          @player.setPendingAction(:default)
+          @game.discard_pile += discarded_policy
+          chancellor = Api::Player.find(@election.chancellor)
+          chancellor.setPendingAction(:policy_draw_chancellor)
+          chancellor.save
+          save_all
+          broadcast_room_message(conversation.id, "The chancellor is picking one policy to pass out of two")
+          render json: {}, status: 200
+          return
+        end
+      end
+    end
+    render json: {}, status: 401
+  end
+
+  def chancellor_policy
+    if @player
+      conversation = @player.conversation
+      @game = conversation.game
+      @election = @game.elections.find_by(:election_status => "session")
+      if @player.id == @election.chancellor
+        policy_picked = @election.policy_picked
+        policy = params[:policy]
+        discarded_policy = policy_picked.slice!(policy)
+        if policy && policy.length == 1 && policy.count("01") == 1 && discarded_policy && discarded_policy.length == 1
+          @game.policy_passed += policy
+          @game.discard_pile += discarded_policy
+          @election.election_status = "passed"
+          @player.setPendingAction(:default)
+          save_all
+          broadcast_room_message(conversation.id, "Government has passed a #{policy == "0" ? "Liberal" : "Facist"} policy")
+          GameWorkerJob.perform_now("start_election", Api::ConversationSerializer.new(conversation).attributes)
+          render json: {}, status: 200
+          return
+        end
       end
     end
   end
@@ -160,5 +196,11 @@ class Api::PlayersController < Api::ConversationsController
 
   def set_player
     @player = Api::Player.find_by(:conversation_id => params[:conversation_id], :user_id => session[:user_id])
+  end
+
+  def save_all
+    @election.save
+    @game.save
+    @player.save
   end
 end

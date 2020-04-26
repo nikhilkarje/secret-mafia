@@ -10,7 +10,8 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_04_23_231104) do
+ActiveRecord::Schema.define(version: 2020_04_25_204439) do
+
   create_table "conversations", force: :cascade do |t|
     t.string "title"
     t.datetime "created_at", precision: 6, null: false
@@ -19,19 +20,15 @@ ActiveRecord::Schema.define(version: 2020_04_23_231104) do
     t.integer "players_joined", default: 0, null: false
   end
 
-  # TODO: Remove policy_discarded, policy_status
   create_table "elections", force: :cascade do |t|
     t.integer "president", null: false
     t.integer "chancellor"
     t.string "election_status", default: "active", null: false
-    t.string "policy_status"
     t.string "policy_draw"
-    t.string "policy_passed"
-    t.string "policy_picked"
-    t.string "policy_discarded"
     t.integer "game_id", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.string "policy_picked"
     t.index ["game_id"], name: "index_elections_on_game_id"
   end
 
@@ -41,6 +38,8 @@ ActiveRecord::Schema.define(version: 2020_04_23_231104) do
     t.integer "conversation_id", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.string "policy_passed", default: "", null: false
+    t.string "discard_pile", default: "", null: false
     t.index ["conversation_id"], name: "index_games_on_conversation_id"
   end
 
@@ -50,7 +49,7 @@ ActiveRecord::Schema.define(version: 2020_04_23_231104) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.integer "user_id", default: 1, null: false
-    t.string "name", default: "placeholder", null: false
+    t.string "name", null: false
     t.index ["conversation_id"], name: "index_messages_on_conversation_id"
     t.index ["user_id"], name: "index_messages_on_user_id"
   end
@@ -65,6 +64,7 @@ ActiveRecord::Schema.define(version: 2020_04_23_231104) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.string "pending_action", default: "none", null: false
+    t.string "name", null: false
     t.index ["conversation_id"], name: "index_players_on_conversation_id"
     t.index ["user_id"], name: "index_players_on_user_id"
   end
@@ -78,7 +78,6 @@ ActiveRecord::Schema.define(version: 2020_04_23_231104) do
     t.datetime "updated_at", precision: 6, null: false
   end
 
-  # TODO: election_id needs to be unique
   create_table "votes", force: :cascade do |t|
     t.boolean "ballot", null: false
     t.integer "player_id", null: false

@@ -96,9 +96,7 @@ const RoleConfirmModal = ({ player }: { player: Player }) => {
               <Content>
                 {controlData.players.map((player) => (
                   <CCard key={player.id}>
-                    <div>
-                      {player.user.first_name} {player.user.last_name}
-                    </div>
+                    <div>{player.name}</div>
                     {player.secret_special_role === "hitler" && (
                       <RedSpan>(Secret Hitler)</RedSpan>
                     )}

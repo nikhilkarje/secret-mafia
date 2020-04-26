@@ -35,10 +35,6 @@ export interface Room {
   title: string;
   players_joined: number;
   total_players: number;
-}
-
-export interface Game {
-  id: number;
   election_tracker: number;
   draw_pile: number;
   discard_pile: number;

@@ -1,5 +1,5 @@
-class Api::GameSerializer < ActiveModel::Serializer
-  attributes :id, :election_tracker, :draw_pile, :discard_pile, :liberal_policy, :facist_policy
+class Api::GameSerializer < Api::ConversationSerializer
+  attributes :election_tracker, :draw_pile, :discard_pile, :liberal_policy, :facist_policy
 
   def liberal_policy
     object.policy_passed.count("0")

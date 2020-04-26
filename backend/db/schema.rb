@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_04_25_204439) do
+ActiveRecord::Schema.define(version: 2020_04_26_125808) do
 
   create_table "conversations", force: :cascade do |t|
     t.string "title"
@@ -18,6 +18,10 @@ ActiveRecord::Schema.define(version: 2020_04_25_204439) do
     t.datetime "updated_at", precision: 6, null: false
     t.integer "total_players", default: 5, null: false
     t.integer "players_joined", default: 0, null: false
+    t.integer "election_tracker", default: 0, null: false
+    t.string "policy_order", limit: 17
+    t.string "policy_passed", default: "", null: false
+    t.string "discard_pile", default: "", null: false
   end
 
   create_table "elections", force: :cascade do |t|
@@ -25,22 +29,11 @@ ActiveRecord::Schema.define(version: 2020_04_25_204439) do
     t.integer "chancellor"
     t.string "election_status", default: "active", null: false
     t.string "policy_draw"
-    t.integer "game_id", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.string "policy_picked"
-    t.index ["game_id"], name: "index_elections_on_game_id"
-  end
-
-  create_table "games", force: :cascade do |t|
-    t.integer "election_tracker", default: 0, null: false
-    t.string "policy_order", limit: 17
     t.integer "conversation_id", null: false
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
-    t.string "policy_passed", default: "", null: false
-    t.string "discard_pile", default: "", null: false
-    t.index ["conversation_id"], name: "index_games_on_conversation_id"
+    t.index ["conversation_id"], name: "index_elections_on_conversation_id"
   end
 
   create_table "messages", force: :cascade do |t|
@@ -88,8 +81,7 @@ ActiveRecord::Schema.define(version: 2020_04_25_204439) do
     t.index ["player_id"], name: "index_votes_on_player_id"
   end
 
-  add_foreign_key "elections", "games"
-  add_foreign_key "games", "conversations"
+  add_foreign_key "elections", "conversations"
   add_foreign_key "messages", "conversations"
   add_foreign_key "messages", "users"
   add_foreign_key "players", "conversations"

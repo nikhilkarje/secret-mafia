@@ -1,8 +1,8 @@
 class Api::Election < ApplicationRecord
   has_many :votes
-  belongs_to :game
+  belongs_to :conversation
 
   def previous
-    self.class.where("game_id=? AND id < ?", game_id, id).last
+    self.class.where("conversation_id=? AND id < ?", conversation_id, id).last
   end
 end

@@ -2,7 +2,6 @@ Rails.application.routes.draw do
   namespace :api do
     resources :users
     resources :conversations, only: [:index, :show, :create] do
-      resources :games, only: [:index]
       resources :players, only: [:index, :create] do
         get "/pending_action", to: "players#pending_action"
         post "/confirm_role", to: "players#confirm_role"

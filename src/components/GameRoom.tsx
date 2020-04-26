@@ -4,7 +4,7 @@ import { White, Blue, DarkGrey, FadedRed } from "styles/color";
 
 import TopHeader from "components/common/TopHeader";
 import Card from "components/common/Card";
-import { Room, Game } from "interfaces";
+import { Room } from "interfaces";
 import CableContext from "containers/CableContext";
 import Players from "components/Players";
 import { CenteredContent } from "styles/common";
@@ -12,22 +12,16 @@ import { get } from "utils/request";
 
 const GameRoom = ({ room }: { room: Room }) => {
   const { cable } = useContext(CableContext);
-  const [game, setGame] = useState<Game | null>(null);
-
-  const fetchPlayers = () => {
-    get(`/api/conversations/${room.id}/games`)
-      .then((response) => response.json())
-      .then((data) => setGame(data));
-  };
+  const [game, setGame] = useState<Room>(room);
 
   useEffect(() => {
     cable.subscriptions.create(
       { channel: "GameChannel", conversation: room.id },
       {
         received: (response) => {
-          setGame(response as Game);
+          setGame(response as Room);
         },
-        connected: () => fetchPlayers(),
+        connected: () => {},
         disconnected: () => {},
       }
     );

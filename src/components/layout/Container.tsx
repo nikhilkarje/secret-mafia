@@ -18,7 +18,6 @@ export default function Container({
       <CContainer>
         <Header isLogin={isLogin} />
         <Content>{children}</Content>
-        <Footer />
       </CContainer>
     </>
   );
@@ -31,7 +30,7 @@ const CContainer = styled.div`
 
 const Content = styled.div`
   height: 1px;
-  min-height: calc(100vh - ${HEADER_HEIGHT + FOOTER_HEIGHT}px);
+  min-height: calc(100vh - ${HEADER_HEIGHT}px);
   flex: 1 0 auto;
   background-color: ${EggShellWhite};
 `;

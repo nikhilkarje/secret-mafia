@@ -4,7 +4,7 @@ class Api::Player < ApplicationRecord
   has_many :votes
 
   def self.status_option
-    { :logged_out => "logged_out", :active => "active" }
+    { :active => "active" }
   end
 
   def self.action_option
@@ -17,7 +17,6 @@ class Api::Player < ApplicationRecord
 
   def setStatus(status)
     self.status = Api::Player.status_option[status]
-    self.save
   end
 
   def delete

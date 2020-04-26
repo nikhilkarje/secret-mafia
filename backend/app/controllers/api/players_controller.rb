@@ -45,24 +45,6 @@ class Api::PlayersController < Api::ConversationsController
           return
         end
       when Api::Player.action_option[:president]
-        conversation = @player.conversation
-        game = conversation.game
-        last_passed_election = game.elections.where(:election_status => "passed").last
-        last_failed_election = game.elections.where(:election_status => "failed").offset(2).first
-        players = conversation.players
-        inelligible_players = [@player.id]
-        if last_passed_election && (!last_failed_election || last_failed_election.id < last_passed_election.id)
-          inelligible_players << last_passed_election.chancellor
-          if conversation.total_players > 5
-            inelligible_players << last_passed_election.president
-          end
-        end
-        elligible_players = []
-        players.each do |player|
-          unless inelligible_players.include?(player.id)
-            elligible_players << Api::PlayerSerializer.new(player)
-          end
-        end
         render json: { :type => "presidental_conferrence", :data => elligible_players }
         return
       when Api::Player.action_option[:vote]
@@ -71,11 +53,11 @@ class Api::PlayersController < Api::ConversationsController
         render json: { :type => "election_day", :data => Api::PlayerSerializer.new(chancellor) }
         return
       when Api::Player.action_option[:policy_draw_president]
-        current_election = @player.conversation.game.elections.find_by(:election_status => "session")
+        current_election = @player.conversation.game.elections.find_by(:election_status => "active")
         render json: { :type => "presidential_choice", :data => current_election.policy_draw }
         return
       when Api::Player.action_option[:policy_draw_chancellor]
-        current_election = @player.conversation.game.elections.find_by(:election_status => "session")
+        current_election = @player.conversation.game.elections.find_by(:election_status => "active")
         render json: { :type => "chancellors_choice", :data => current_election.policy_picked }
         return
       when Api::Player.action_option[:default]
@@ -146,7 +128,7 @@ class Api::PlayersController < Api::ConversationsController
     if @player
       conversation = @player.conversation
       @game = conversation.game
-      @election = @game.elections.find_by(:election_status => "session")
+      @election = @game.elections.find_by(:election_status => "active")
       if @player.id == @election.president
         policy_draw = @election.policy_draw
         policy = params[:policy]
@@ -172,7 +154,7 @@ class Api::PlayersController < Api::ConversationsController
     if @player
       conversation = @player.conversation
       @game = conversation.game
-      @election = @game.elections.find_by(:election_status => "session")
+      @election = @game.elections.find_by(:election_status => "active")
       if @player.id == @election.chancellor
         policy_picked = @election.policy_picked
         policy = params[:policy]
@@ -184,7 +166,7 @@ class Api::PlayersController < Api::ConversationsController
           @player.setPendingAction(:default)
           save_all
           broadcast_room_message(conversation.id, "Government has passed a #{policy == "0" ? "Liberal" : "Facist"} policy")
-          GameWorkerJob.perform_now("start_election", Api::ConversationSerializer.new(conversation).attributes)
+          GameWorkerJob.perform_now("end_election", Api::ConversationSerializer.new(conversation).attributes)
           render json: {}, status: 200
           return
         end
@@ -193,6 +175,28 @@ class Api::PlayersController < Api::ConversationsController
   end
 
   private
+
+  def elligible_players
+    conversation = @player.conversation
+    players = conversation.players
+    elections = conversation.game.elections
+    last_passed_election = elections.where(:election_status => "passed").last
+    last_failed_election = elections.where(:election_status => "failed").offset(2).first
+    inelligible_players = [@player.id]
+    if last_passed_election && (!last_failed_election || last_failed_election.id < last_passed_election.id)
+      inelligible_players << last_passed_election.chancellor
+      if conversation.total_players > 5
+        inelligible_players << last_passed_election.president
+      end
+    end
+    elligible_players = []
+    players.each do |player|
+      unless inelligible_players.include?(player.id)
+        elligible_players << Api::PlayerSerializer.new(player)
+      end
+    end
+    elligible_players
+  end
 
   def set_player
     @player = Api::Player.find_by(:conversation_id => params[:conversation_id], :user_id => session[:user_id])

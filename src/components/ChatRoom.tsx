@@ -9,6 +9,7 @@ import CableContext from "containers/CableContext";
 import { BrightRed, Green } from "styles/color";
 import { get } from "utils/request";
 import { Room, Message } from "interfaces";
+import Footer from "components/layout/Footer";
 
 export default function ChatRoom() {
   const { roomId } = useParams();
@@ -64,7 +65,8 @@ export default function ChatRoom() {
       {room && messages && (
         <>
           <GameContainer>
-            <GameRoom room={room}></GameRoom>
+            <GameRoom room={room} />
+            <CFooter />
           </GameContainer>
           <CCard>
             <Content ref={contentRef}>
@@ -92,10 +94,16 @@ const Container = styled.div`
 
 const GameContainer = styled.div`
   flex: 1 0 auto;
+  display: flex;
+  flex-direction: column;
+`;
+
+const CFooter = styled(Footer)`
+  flex: 0 0 auto;
 `;
 
 const CCard = styled(Card)`
-  flex: 0 0 300px;
+  flex: 0 0 320px;
   height: 100%;
   display: flex;
   flex-direction: column;

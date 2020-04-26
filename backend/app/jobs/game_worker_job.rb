@@ -71,6 +71,75 @@ class GameWorkerJob < ApplicationJob
     @game.policy_order += new_policy_order
   end
 
+  def reveal_team
+    facist_players = @players.where(:secret_team_role => "facist")
+    secret_hitler = @players.where(:secret_special_role => "hitler")
+    liberal_players = @players.where(:secret_team_role => "liberal")
+    message = "Team Facist: "
+    facist_players.each do |player|
+      if player.id == secret_hitler.id
+        message += "#{player.name} (Secret Hitler) "
+      else
+        message += "#{player.name} "
+      end
+    end
+    broadcast_room_message(@payload[:id], message)
+    message = "Team Liberal: "
+    liberal_players.each do |player|
+      message += "#{player.name} "
+    end
+    broadcast_room_message(@payload[:id], message)
+  end
+
+  def is_aye?
+    votes = @election.votes
+    total_ayes = votes.where(:ballot => true)
+    total_nayes = votes.where(:ballot => false)
+    broadcast_room_message(@payload[:id], "Election results are in")
+    total_ayes.each do |vote|
+      player = vote.player
+      broadcast_room_message(@payload[:id], "#{player.name} voted Ja")
+    end
+    total_nayes.each do |vote|
+      player = vote.player
+      broadcast_room_message(@payload[:id], "#{player.name} voted Nein")
+    end
+    return total_ayes.length > total_nayes.length
+  end
+
+  def hitler_as_chancellor?
+    facist_policies = @game.policy_passed.count("1")
+    if facist_policies > 3
+      secret_hitler = @players.where(:secret_special_role => "hitler")
+      if @election.chancellor == secret_hitler.id
+        broadcast_room_message(@payload[:id], "Secret Hitler has been voted as Chancellor. Facists win.")
+        reveal_team
+        return true
+      end
+    end
+    return false
+  end
+
+  def reset_election_tracker
+    if @game.election_tracker != 0
+      @game.election_tracker = 0
+    end
+  end
+
+  def policy_draw
+    @election.policy_draw = @game.policy_order[0..2]
+    @game.policy_order = @game.policy_order[3..-1]
+  end
+
+  def check_doomsday
+    if @game.election_tracker >= 3
+      @game.election_tracker = 0
+      @game.policy_passed = @game.policy_order[0]
+      @game.policy_order = @game.policy_order[1..-1]
+      broadcast_room_message(@payload[:id], "Three elections failed in a row. Frustrated populace enacted a #{@game.policy_passed == "0" ? "Liberal" : "Facist"} policy")
+    end
+  end
+
   def perform(type, payload)
     # Do something later
     @payload = payload
@@ -92,49 +161,41 @@ class GameWorkerJob < ApplicationJob
       end
     when "election_results"
       @game = @conversation.game
-      election = @game.elections.find_by(:election_status => "active")
-      votes = election.votes
-      total_ayes = votes.where(:ballot => true)
-      total_nayes = votes.where(:ballot => false)
-      broadcast_room_message(@payload[:id], "Election results are in")
-      total_ayes.each do |vote|
-        player = vote.player
-        broadcast_room_message(@payload[:id], "#{player.name} voted Ja")
-      end
-      total_nayes.each do |vote|
-        player = vote.player
-        broadcast_room_message(@payload[:id], "#{player.name} voted Nein")
-      end
+      @election = @game.elections.find_by(:election_status => "active")
+
       if @game.policy_order.length < 3
         reorder_policy
       end
-      if total_ayes.length > total_nayes.length
+      if is_aye?
+        return if hitler_as_chancellor?
         broadcast_room_message(@payload[:id], "The proposed government is established. Assembly is now in session")
-        if @game.election_tracker != 0
-          @game.election_tracker = 0
-        end
-        election.election_status = "session"
-
-        election.policy_draw = @game.policy_order[0..2]
-        @game.policy_order = @game.policy_order[3..-1]
-        president = @players.find(election.president)
+        reset_election_tracker
+        policy_draw
+        president = @players.find(@election.president)
         president.setPendingAction(:policy_draw_president)
         broadcast_room_message(@payload[:id], "The president draws three policy and will pass two for the chancellor")
         @game.save
-        election.save
         president.save
       else
         @game.election_tracker += 1
-        election.election_status = "failed"
+        @election.election_status = "failed"
         broadcast_room_message(@payload[:id], "The proposed government has failed")
-        if @game.election_tracker >= 3
-          @game.election_tracker = 0
-          @game.policy_passed = @game.policy_order[0]
-          @game.policy_order = @game.policy_order[1..-1]
-          broadcast_room_message(@payload[:id], "Three elections failed in a row. Frustrated populace enacted a #{@game.policy_passed == "0" ? "Liberal" : "Facist"} policy")
-        end
+        check_doomsday
         @game.save
-        election.save
+        @election.save
+        start_election
+      end
+    when "end_election"
+      @game = @conversation.game
+      liberal_policies = @game.policy_passed.count("0")
+      facist_policies = @game.policy_passed.count("1")
+      if liberal_policies >= 5
+        broadcast_room_message(@payload[:id], "Five Liberal policies are enacted. Liberals win.")
+        reveal_team
+      elsif facist_policies >= 6
+        broadcast_room_message(@payload[:id], "Six Facist policies are enacted. Facists win.")
+        reveal_team
+      else
         start_election
       end
     end

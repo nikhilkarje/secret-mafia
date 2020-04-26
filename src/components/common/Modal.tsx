@@ -89,19 +89,13 @@ const Modal = forwardRef(
   }
 );
 
-const TriggerContainer = styled.div<{
-  triggerCss?: any;
-}>`
-  display: inline-block;
-  ${({ triggerCss }: { triggerCss?: any }) => triggerCss}
-`;
-
 const FixedCss = css`
   position: fixed;
   right: 0px;
   bottom: 0px;
   top: 0px;
   left: 0px;
+  right: 320px;
 `;
 
 const ModalWrapper = styled.div`

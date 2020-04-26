@@ -2,7 +2,7 @@ class MessagesChannel < ApplicationCable::Channel
   def subscribed
     # TODO: Add validation
     conversation = Api::Conversation.find(params[:conversation])
-    isTeam = conversation.players.find_by(:user_id => current_user.id)
+    isTeam = Api::Player.find_by(:conversation_id => conversation.id, :user_id => current_user.id)
     unless isTeam
       reject
       return

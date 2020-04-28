@@ -8,7 +8,13 @@ import WideInput from "components/common/WideInput";
 import Modal from "components/common/Modal";
 import { post } from "utils/request";
 
-const NewRoomForm = ({ modalControlRef }: { modalControlRef?: any }) => {
+const NewRoomForm = ({
+  modalControlRef,
+  onSubmit,
+}: {
+  modalControlRef?: any;
+  onSubmit?: () => void;
+}) => {
   const [title, setTitle] = useState<string>("");
   const [errorField, setErrorField] = useState<string>("");
 
@@ -36,6 +42,9 @@ const NewRoomForm = ({ modalControlRef }: { modalControlRef?: any }) => {
     if (modalControlRef.current) {
       modalControlRef.current.removeModal();
     }
+    if (onSubmit) {
+      onSubmit();
+    }
   };
 
   return (
@@ -56,10 +65,16 @@ const NewRoomForm = ({ modalControlRef }: { modalControlRef?: any }) => {
   );
 };
 
-const NewRoomModal = ({ modalControlRef }: { modalControlRef: any }) => {
+const NewRoomModal = ({
+  modalControlRef,
+  onSubmit,
+}: {
+  modalControlRef: any;
+  onSubmit?: () => void;
+}) => {
   return (
     <Modal ref={modalControlRef}>
-      <NewRoomForm modalControlRef={modalControlRef} />
+      <NewRoomForm onSubmit={onSubmit} modalControlRef={modalControlRef} />
     </Modal>
   );
 };

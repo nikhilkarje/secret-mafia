@@ -12,6 +12,8 @@ import ChancellorConfirmModal from "components/ChancellorConfirmModal";
 import BallotModal from "components/BallotModal";
 import PresidentialPolicyModal from "components/PresidentialPolicyModal";
 import ChancellorPolicyModal from "components/ChancellorPolicyModal";
+import ExamineDeckModal from "components/ExamineDeckModal";
+import ExecutePlayerModal from "components/ExecutePlayerModal";
 
 const PlayerItem = ({ player }: { player: Player }) => {
   const { config } = useContext(ConfigContext);
@@ -46,6 +48,12 @@ const PlayerItem = ({ player }: { player: Player }) => {
         player.pending_action === "policy_draw_chancellor" && (
           <ChancellorPolicyModal player={player} />
         )}
+      {isCurrentPlayer && player.pending_action === "examine_deck" && (
+        <ExamineDeckModal player={player} />
+      )}
+      {isCurrentPlayer && player.pending_action === "kill" && (
+        <ExecutePlayerModal player={player} />
+      )}
     </>
   );
 };

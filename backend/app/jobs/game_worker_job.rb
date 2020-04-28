@@ -41,7 +41,7 @@ class GameWorkerJob < ApplicationJob
     end
     if !last_election
       president_index = rand_n(1, @conversation.total_players)
-      current_president = @players[president_index]
+      current_president = @players[president_index[0]]
     else
       last_president = @players.find(last_election.president)
       last_chancellor = @players.find(last_election.chancellor)
@@ -120,7 +120,8 @@ class GameWorkerJob < ApplicationJob
       if facist_power
         president = Api::Player.find(@conversation.elections.last.president)
         president.set_pending_action(facist_power)
-        broadcast_room_message(@payload[:id], facist_power_broadcast_hash(facist_power))
+        president.save
+        broadcast_room_message(@payload[:id], facist_power_broadcast_hash[facist_power])
         return true
       end
     end
@@ -160,6 +161,7 @@ class GameWorkerJob < ApplicationJob
         president.set_pending_action(:policy_draw_president)
         broadcast_room_message(@payload[:id], "The president draws three policy and will pass two for the chancellor")
         @conversation.save
+        @election.save
         president.save
       else
         @conversation.election_tracker += 1

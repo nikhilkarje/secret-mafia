@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_04_26_125808) do
+ActiveRecord::Schema.define(version: 2020_04_28_145802) do
 
   create_table "conversations", force: :cascade do |t|
     t.string "title"
@@ -48,7 +48,7 @@ ActiveRecord::Schema.define(version: 2020_04_26_125808) do
   end
 
   create_table "players", force: :cascade do |t|
-    t.string "status", default: "logged_out", null: false
+    t.string "status", default: "active", null: false
     t.string "secret_team_role", default: "liberal", null: false
     t.string "secret_special_role"
     t.string "public_role", default: "default", null: false

@@ -9,15 +9,17 @@ const ModalLayout = ({
   children,
   closeModal,
   hideClose,
+  partialOverlay,
 }: {
   children: React.ReactNode;
   closeModal: () => void;
   hideClose?: boolean;
+  partialOverlay: boolean;
 }) => {
   return (
     <>
-      <ModalOverlay onClick={closeModal} />
-      <ModalContainer>
+      <ModalOverlay partialOverlay={partialOverlay} onClick={closeModal} />
+      <ModalContainer partialOverlay={partialOverlay}>
         <ModalWrapper>
           {!hideClose && (
             <CloseWrapper onClick={closeModal}>
@@ -38,11 +40,13 @@ const Modal = forwardRef(
       hideClose,
       onOpen,
       onClose,
+      partialOverlay,
     }: {
       children?: React.ReactNode;
       hideClose?: boolean;
       onOpen?: () => any;
       onClose?: () => any;
+      partialOverlay?: boolean;
     },
     ref
   ) => {
@@ -71,44 +75,53 @@ const Modal = forwardRef(
       () => {
         return { addModal, removeModal };
       },
-      []
+      [open]
     );
 
     return (
       open && (
-        <ModalLayout hideClose={hideClose} closeModal={removeModal}>
+        <ModalLayout
+          partialOverlay={partialOverlay}
+          hideClose={hideClose}
+          closeModal={removeModal}
+        >
           {children}
         </ModalLayout>
       )
     );
-    // return children ? (
-    //   <TriggerContainer triggerCss={triggerCss} onClick={addModal}>
-    //     {children}
-    //   </TriggerContainer>
-    // ) : null;
   }
 );
 
-const FixedCss = css`
+const FixedCss = css<{
+  partialOverlay: boolean;
+}>`
   position: fixed;
   right: 0px;
   bottom: 0px;
   top: 0px;
   left: 0px;
-  right: 320px;
+  ${({ partialOverlay }) =>
+    partialOverlay &&
+    css`
+      right: 320px;
+    `}
 `;
 
 const ModalWrapper = styled.div`
   position: relative;
 `;
 
-const ModalContainer = styled.div`
+const ModalContainer = styled.div<{
+  partialOverlay: boolean;
+}>`
   z-index: 1301;
   ${CenteredContent}
   ${FixedCss}
 `;
 
-const ModalOverlay = styled.div`
+const ModalOverlay = styled.div<{
+  partialOverlay: boolean;
+}>`
   z-index: 1300;
   background-color: rgba(0, 0, 0, 0.5);
   ${FixedCss}

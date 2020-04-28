@@ -16,9 +16,8 @@ class Api::ConversationsController < ApplicationController
   end
 
   def create
-    conversation = Api::Conversation.new(conversation_params)
+    conversation = Api::Conversation.new(conversation_params.merge({ :policy_order => generate_policy_order }))
     if conversation.save
-      ActionCable.server.broadcast "conversations_channel", Api::ConversationSerializer.new(conversation)
       head :ok
     end
   end

@@ -1,8 +1,9 @@
+include Api::ConversationsHelper
+
 class Api::Player < ApplicationRecord
-  include Api::ConversationsHelper
   belongs_to :conversation
   belongs_to :user
-  has_many :votes
+  has_many :votes, dependent: :destroy
   scope :filter_by_active, -> { where status: self.status_option[:active] }
 
   def self.status_option
@@ -14,8 +15,9 @@ class Api::Player < ApplicationRecord
   end
 
   def self.action_option
+    action_option_hash = {}
     action_list = [:confirm_role, :choose_chancellor, :policy_draw_president, :policy_draw_chancellor,
-                   :vote, :confirm_investigation, :default].concat(facist_power_list)
+                   :vote, :confirm_investigation, :default].concat(facist_power_list())
     action_list.each { |key| action_option_hash[key] = key.to_s }
     action_option_hash
   end
@@ -35,8 +37,11 @@ class Api::Player < ApplicationRecord
 
   # TODO: Change default value from liberal to default
   def save
-    super
-    PlayersChannel.broadcast_to self.conversation, { :type => "update", :data => Api::PlayerSerializer.new(self) }
+    p = super
+    if p
+      PlayersChannel.broadcast_to self.conversation, { :type => "update", :data => Api::PlayerSerializer.new(self) }
+    end
+    p
   end
 
   def broadcast

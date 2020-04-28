@@ -33,7 +33,7 @@ class Api::PlayersController < Api::ConversationsController
   def pending_action
     if @player
       case @player.pending_action
-      when Api::Player.action_option[:role]
+      when Api::Player.action_option[:confirm_role]
         case @player.secret_team_role
         when "facist"
           facist_players = @player.conversation.players.where(:secret_team_role => "facist")
@@ -44,7 +44,7 @@ class Api::PlayersController < Api::ConversationsController
           render json: { :type => "liberal_conferrence" }
           return
         end
-      when Api::Player.action_option[:president]
+      when Api::Player.action_option[:choose_chancellor]
         render json: { :type => "presidental_conferrence", :data => elligible_players }
         return
       when Api::Player.action_option[:vote]
@@ -60,6 +60,22 @@ class Api::PlayersController < Api::ConversationsController
         current_election = @player.conversation.elections.find_by(:election_status => "active")
         render json: { :type => "chancellors_choice", :data => current_election.policy_picked }
         return
+      when Api::Player.action_option[:kill]
+        render json: { :type => "kill", :data => other_players }
+        return
+      when Api::Player.action_option[:examine_deck]
+        top_three_policies = @player.conversation.policy_order[0..2]
+        render json: { :type => "examine_deck", :data => top_three_policies }
+      when Api::Player.action_option[:examine_player]
+        render json: { :type => "examine_player", :data => other_players }
+        return
+      when Api::Player.action_option[:confirm_investigation]
+        player = Api.Player.find_by(:conversation_id => @player.conversation_id, :status => Api::Player.status_option[:investigated])
+        render json: { :type => "confirm_investigation", :data => Api::PlayerSerializer.new(player, :show_team => true) }
+        return
+      when Api::Player.action_option[:pick_president]
+        render json: { :type => "pick_president", :data => other_players }
+        return
       when Api::Player.action_option[:default]
         render json: { :type => "none" }
         return
@@ -69,8 +85,8 @@ class Api::PlayersController < Api::ConversationsController
   end
 
   def confirm_role
-    if @player && @player.pending_action == Api::Player.action_option[:role]
-      @player.setPendingAction(:default)
+    if @player && @player.check_pending_action(:confirm_role)
+      @player.set_pending_action(:default)
       @player.save
       conversation = @player.conversation
       if conversation.players.where(:pending_action => Api::Player.action_option[:default]).length == conversation.total_players
@@ -83,16 +99,16 @@ class Api::PlayersController < Api::ConversationsController
   end
 
   def confirm_chancellor
-    if @player && @player.pending_action == Api::Player.action_option[:president]
+    if @player && @player.check_pending_action(:choose_chancellor)
       conversation = @player.conversation
-      chancellor = conversation.players.find(params[:chancellor_id]) if params[:chancellor_id]
+      chancellor = conversation.players.filter_by_active.find(params[:chancellor_id]) if params[:chancellor_id]
       election = conversation.elections.find_by(:election_status => "active")
       if chancellor && election
         election.chancellor = chancellor.id
         election.save
         chancellor.public_role = "chancellor"
         chancellor.save
-        @player.setPendingAction(:default)
+        @player.set_pending_action(:default)
         @player.save
         broadcast_room_message(conversation.id, "#{chancellor.name} is nominated for Chancellor. Voting will now begin.")
         GameWorkerJob.perform_now("start_voting", Api::ConversationSerializer.new(conversation).attributes)
@@ -104,14 +120,14 @@ class Api::PlayersController < Api::ConversationsController
   end
 
   def cast_vote
-    if @player
+    if @player && @player.check_pending_action(:vote)
       conversation = @player.conversation
       election = conversation.elections.find_by(:election_status => "active")
       has_voted = Api::Vote.find_by(:player_id => @player.id, :election_id => election.id)
       if !has_voted
         vote = Api::Vote.new({ :player_id => @player.id, :election_id => election.id, :ballot => params[:ballot] })
         if vote.save
-          @player.setPendingAction(:default)
+          @player.set_pending_action(:default)
           @player.save
           if election.votes.length === conversation.total_players
             GameWorkerJob.perform_now("election_results", Api::ConversationSerializer.new(conversation).attributes)
@@ -125,32 +141,30 @@ class Api::PlayersController < Api::ConversationsController
   end
 
   def presidential_policy
-    if @player
+    if @player && @player.check_pending_action(:policy_draw_president)
       @conversation = @player.conversation
       @election = @conversation.elections.find_by(:election_status => "active")
-      if @player.id == @election.president
-        policy_draw = @election.policy_draw
-        policy = params[:policy]
-        discarded_policy = policy_draw.slice!(policy[0]) && policy_draw.slice!(policy[1])
-        if policy && policy.length == 2 && policy.count("01") == 2 && discarded_policy && discarded_policy.length == 1
-          @election.policy_picked = policy
-          @player.setPendingAction(:default)
-          @conversation.discard_pile += discarded_policy
-          chancellor = Api::Player.find(@election.chancellor)
-          chancellor.setPendingAction(:policy_draw_chancellor)
-          chancellor.save
-          save_all
-          broadcast_room_message(@conversation.id, "The chancellor is picking one policy to pass out of two")
-          render json: {}, status: 200
-          return
-        end
+      policy_draw = @election.policy_draw
+      policy = params[:policy]
+      discarded_policy = policy_draw.slice!(policy[0]) && policy_draw.slice!(policy[1])
+      if policy && policy.length == 2 && policy.count("01") == 2 && discarded_policy && discarded_policy.length == 1
+        @election.policy_picked = policy
+        @conversation.discard_pile += discarded_policy
+        @player.set_pending_action(:default)
+        chancellor = Api::Player.find(@election.chancellor)
+        chancellor.set_pending_action(:policy_draw_chancellor)
+        chancellor.save
+        save_all
+        broadcast_room_message(@conversation.id, "The chancellor is picking one policy to pass out of two")
+        render json: {}, status: 200
+        return
       end
     end
     render json: {}, status: 401
   end
 
   def chancellor_policy
-    if @player
+    if @player && @player.check_pending_action(:policy_draw_chancellor)
       @conversation = @player.conversation
       @election = @conversation.elections.find_by(:election_status => "active")
       if @player.id == @election.chancellor
@@ -161,29 +175,121 @@ class Api::PlayersController < Api::ConversationsController
           @conversation.policy_passed += policy
           @conversation.discard_pile += discarded_policy
           @election.election_status = "passed"
-          @player.setPendingAction(:default)
+          @player.set_pending_action(:default)
           save_all
           broadcast_room_message(@conversation.id, "Government has passed a #{policy == "0" ? "Liberal" : "Facist"} policy")
-          GameWorkerJob.perform_now("end_election", Api::ConversationSerializer.new(conversation).attributes)
+          GameWorkerJob.perform_now("pass_election", Api::ConversationSerializer.new(@conversation).attributes)
           render json: {}, status: 200
           return
         end
       end
     end
+    render json: {}, status: 401
+  end
+
+  def kill_player
+    if params[:player_id] && @player && @player.check_pending_action(:kill)
+      @conversation = @player.conversation
+      dead_player = @conversation.players.filter_by_active.find(params[:player_id])
+      if dead_player
+        dead_player.set_status(:dead)
+        dead_player.save
+        @player.set_pending_action(:default)
+        @player.save
+        broadcast_room_message(@conversation.id, "President has executed #{dead_player.name}")
+        if dead_player.secret_special_role && dead_player.secret_special_role == "hitler"
+          broadcast_room_message(@conversation.id, "Secret Hitler is dead. Liberals win")
+          reveal_team
+        else
+          GameWorkerJob.perform_now("start_election", Api::ConversationSerializer.new(@conversation).attributes)
+        end
+        render json: {}, status: 200
+        return
+      end
+    end
+    render json: {}, status: 401
+  end
+
+  def confirm_deck
+    if @player && @player.check_pending_action(:examine_deck)
+      @player.set_pending_action(:default)
+      @player.save
+      GameWorkerJob.perform_now("start_election", Api::ConversationSerializer.new(@player.conversation).attributes)
+      render json: {}, status: 200
+    end
+    render json: {}, status: 401
+  end
+
+  def examine_player
+    if params[:player_id] && @player && @player.check_pending_action(:examine_player)
+      @conversation = @player.conversation
+      investigated_player = @conversation.players.filter_by_active.find(params[:player_id])
+      if investigated_player
+        investigated_player.set_status(:investigated)
+        investigated_player.save
+        @player.set_pending_action(:confirm_investigation)
+        @player.save
+        broadcast_room_message(@conversation.id, "President is investigating #{investigated_player.name}'s role'")
+        render json: {}, status: 200
+        return
+      end
+    end
+    render json: {}, status: 401
+  end
+
+  def confirm_investigation
+    if @player && @player.check_pending_action(:confirm_player_role)
+      @player.set_pending_action(:default)
+      @player.save
+      investigated_player = Api.Player.find_by(:conversation_id => @player.conversation_id, :status => Api::Player.status_option[:investigated])
+      investigated_player.set_status(:active)
+      investigated_player.save
+      GameWorkerJob.perform_now("start_election", Api::ConversationSerializer.new(@player.conversation).attributes)
+      render json: {}, status: 200
+    end
+    render json: {}, status: 401
+  end
+
+  # TODO: Implement President tracker
+  def choose_president
+    if params[:player_id] && @player && @player.check_pending_action(:choose_president) && params[:player_id] != @player.id
+      @conversation = @player.conversation
+      new_president = @conversation.players.filter_by_active.find(params[:player_id])
+      if new_president
+        nominate_president(new_president)
+        @player.public_role = "default"
+        @player.set_pending_action(:default)
+        @player.save
+        last_chancellor = Api::Player.find(:conversation_id => @conversation.id, :public_role => "chancellor")
+        last_chancellor.public_role = "default"
+        last_chancellor.save
+        broadcast_room_message(@conversation.id, "#{new_president.name} has been nomminated as the new President by the old President")
+        render json: {}, status: 200
+        return
+      end
+    end
+    render json: {}, status: 401
   end
 
   private
 
+  def other_players
+    other_players_list = []
+    players = Api.Player.where(:conversation_id => @player.conversation_id, :status => Api::Player.status_option[:active])
+    players.each { |player| other_players_list << Api::PlayerSerializer.new(player) unless player.id == @player.id }
+    other_players_list
+  end
+
   def elligible_players
     conversation = @player.conversation
-    players = conversation.players
+    players = conversation.players.filter_by_active
     elections = conversation.elections
     last_passed_election = elections.where(:election_status => "passed").last
     last_failed_election = elections.where(:election_status => "failed").offset(2).first
     inelligible_players = [@player.id]
     if last_passed_election && (!last_failed_election || last_failed_election.id < last_passed_election.id)
       inelligible_players << last_passed_election.chancellor
-      if conversation.total_players > 5
+      if players.length > 5
         inelligible_players << last_passed_election.president
       end
     end
@@ -197,7 +303,8 @@ class Api::PlayersController < Api::ConversationsController
   end
 
   def set_player
-    @player = Api::Player.find_by(:conversation_id => params[:conversation_id], :user_id => session[:user_id])
+    @player = Api::Player.find_by(:conversation_id => params[:conversation_id], :user_id => session[:user_id],
+                                  :status => Api::Player.status_option[:active])
   end
 
   def save_all

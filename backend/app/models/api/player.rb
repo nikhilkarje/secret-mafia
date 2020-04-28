@@ -1,22 +1,31 @@
 class Api::Player < ApplicationRecord
+  include Api::ConversationsHelper
   belongs_to :conversation
   belongs_to :user
   has_many :votes
+  scope :filter_by_active, -> { where status: self.status_option[:active] }
 
   def self.status_option
-    { :active => "active" }
+    { :active => "active", :dead => "dead", :investigated => "investigated" }
+  end
+
+  def set_status(status)
+    self.status = Api::Player.status_option[status]
   end
 
   def self.action_option
-    { :role => "confirm_role", :president => "choose_chancellor", :policy_draw_president => "choose_2_policies", :policy_draw_chancellor => "choose_1_policy", :vote => "vote", :default => "none" }
+    action_list = [:confirm_role, :choose_chancellor, :policy_draw_president, :policy_draw_chancellor,
+                   :vote, :confirm_investigation, :default].concat(facist_power_list)
+    action_list.each { |key| action_option_hash[key] = key.to_s }
+    action_option_hash
   end
 
-  def setPendingAction(action)
+  def set_pending_action(action)
     self.pending_action = Api::Player.action_option[action]
   end
 
-  def setStatus(status)
-    self.status = Api::Player.status_option[status]
+  def check_pending_action(action)
+    Api::Player.action_option[action] == self.pending_action
   end
 
   def delete
@@ -34,16 +43,16 @@ class Api::Player < ApplicationRecord
     PlayersChannel.broadcast_to self.conversation, { :type => "new", :data => Api::PlayerSerializer.new(self) }
   end
 
-  def next
-    player = Api::Player.where("conversation_id=? AND id > ?", conversation_id, id).first
+  def next_active
+    player = Api::Player.where("conversation_id=? AND status=? AND id > ?", conversation_id, Api::Player.status_option[:active], id).first
     if !player
       player = Api::Player.where(:conversation_id => conversation_id).first
     end
     player
   end
 
-  def previous
-    player = Api::Player.where("conversation_id=? AND id < ?", conversation_id, id).last
+  def previous_active
+    player = Api::Player.where("conversation_id=? AND status=? AND id < ?", conversation_id, Api::Player.status_option[:active], id).last
     if !player
       player = Api::Player.where(:conversation_id => conversation_id).last
     end

@@ -22,7 +22,7 @@ const PlayerItem = ({ player }: { player: Player }) => {
       <CardWrapper>
         <MiniCard>
           {(player.status === "logged_out" ||
-            player.pending_action !== "none") && <Spinner />}
+            player.pending_action !== "default") && <Spinner />}
           {player.name}
         </MiniCard>
         {player.public_role === "president" && <PMiniCard>President</PMiniCard>}
@@ -39,12 +39,13 @@ const PlayerItem = ({ player }: { player: Player }) => {
       {isCurrentPlayer && player.pending_action === "vote" && (
         <BallotModal player={player} />
       )}
-      {isCurrentPlayer && player.pending_action === "choose_2_policies" && (
+      {isCurrentPlayer && player.pending_action === "policy_draw_president" && (
         <PresidentialPolicyModal player={player} />
       )}
-      {isCurrentPlayer && player.pending_action === "choose_1_policy" && (
-        <ChancellorPolicyModal player={player} />
-      )}
+      {isCurrentPlayer &&
+        player.pending_action === "policy_draw_chancellor" && (
+          <ChancellorPolicyModal player={player} />
+        )}
     </>
   );
 };

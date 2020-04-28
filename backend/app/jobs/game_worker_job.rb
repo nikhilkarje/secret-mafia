@@ -26,11 +26,9 @@ class GameWorkerJob < ApplicationJob
     facist_players[hitler_index].secret_special_role = "hitler"
     facist_players.each do |player|
       player.set_pending_action(:confirm_role)
-      player.save
     end
     liberal_players.each do |player|
       player.set_pending_action(:confirm_role)
-      player.save
     end
   end
 
@@ -43,12 +41,10 @@ class GameWorkerJob < ApplicationJob
       president_index = rand_n(1, @conversation.total_players)
       current_president = @players[president_index[0]]
     else
-      last_president = @players.find(last_election.president)
-      last_chancellor = @players.find(last_election.chancellor)
-      last_president.public_role = "default"
-      last_chancellor.public_role = "default"
-      last_president.save
-      last_chancellor.save
+      last_president = @players.find(last_election.president_id)
+      last_chancellor = @players.find(last_election.chancellor_id)
+      last_president.set_public_role(:default)
+      last_chancellor.set_public_role(:default)
       current_president = last_president.next_active
     end
     # current_president = Api::Player.find(1)
@@ -84,7 +80,7 @@ class GameWorkerJob < ApplicationJob
     facist_policies = @conversation.policy_passed.count("1")
     if facist_policies > 3
       secret_hitler = @players.find_by(:secret_special_role => "hitler")
-      if @election.chancellor == secret_hitler.id
+      if @election.chancellor_id == secret_hitler.id
         broadcast_room_message(@payload[:id], "Secret Hitler has been voted as Chancellor. Facists win.")
         reveal_team
         return true
@@ -104,23 +100,13 @@ class GameWorkerJob < ApplicationJob
     @conversation.policy_order = @conversation.policy_order[3..-1]
   end
 
-  def check_doomsday
-    if @conversation.election_tracker >= 3
-      @conversation.election_tracker = 0
-      @conversation.policy_passed = @conversation.policy_order[0]
-      @conversation.policy_order = @conversation.policy_order[1..-1]
-      broadcast_room_message(@payload[:id], "Three elections failed in a row. Frustrated populace enacted a #{@conversation.policy_passed == "0" ? "Liberal" : "Facist"} policy")
-    end
-  end
-
   def check_executive_power
     last_policy = @conversation.policy_passed.last
     if last_policy == "1"
       facist_power = facist_power_hash["#{@conversation.total_players}"]["#{@conversation.policy_passed.count("1")}"]
       if facist_power
-        president = Api::Player.find(@conversation.elections.last.president)
+        president = Api::Player.find(@conversation.elections.last.president_id)
         president.set_pending_action(facist_power)
-        president.save
         broadcast_room_message(@payload[:id], facist_power_broadcast_hash[facist_power])
         return true
       end
@@ -144,7 +130,6 @@ class GameWorkerJob < ApplicationJob
     when "start_voting"
       @players.each do |player|
         player.set_pending_action(:vote)
-        player.save
       end
     when "election_results"
       @election = @conversation.elections.find_by(:election_status => "active")
@@ -157,17 +142,14 @@ class GameWorkerJob < ApplicationJob
         broadcast_room_message(@payload[:id], "The proposed government is established. Assembly is now in session")
         reset_election_tracker
         policy_draw
-        president = @players.find(@election.president)
+        president = @players.find(@election.president_id)
         president.set_pending_action(:policy_draw_president)
         broadcast_room_message(@payload[:id], "The president draws three policy and will pass two for the chancellor")
         @conversation.save
         @election.save
-        president.save
       else
-        @conversation.election_tracker += 1
-        @election.election_status = "failed"
         broadcast_room_message(@payload[:id], "The proposed government has failed")
-        check_doomsday
+        fail_election
         @conversation.save
         @election.save
         start_election

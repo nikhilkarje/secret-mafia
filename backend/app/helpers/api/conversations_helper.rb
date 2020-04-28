@@ -51,6 +51,10 @@ module Api::ConversationsHelper
 
   def reveal_team
     @players = @conversation.players
+    @players.each do |player|
+      player.set_pending_action(:end_game)
+    end
+
     facist_players = @players.where(:secret_team_role => "facist")
     secret_hitler = @players.where(:secret_special_role => "hitler")
     liberal_players = @players.where(:secret_team_role => "liberal")
@@ -71,10 +75,24 @@ module Api::ConversationsHelper
   end
 
   def nominate_president(player)
-    election = Api::Election.new({ :conversation_id => @conversation.id, :president => player.id })
+    election = Api::Election.new({ :conversation_id => @conversation.id, :president_id => player.id })
     election.save
-    player.public_role = "president"
+    player.set_public_role(:president)
     player.set_pending_action(:choose_chancellor)
-    player.save
+  end
+
+  def check_doomsday
+    if @conversation.election_tracker >= 3
+      @conversation.election_tracker = 0
+      @conversation.policy_passed = @conversation.policy_order[0]
+      @conversation.policy_order = @conversation.policy_order[1..-1]
+      broadcast_room_message(@conversation.id, "Three elections failed in a row. Frustrated populace enacted a #{@conversation.policy_passed == "0" ? "Liberal" : "Facist"} policy")
+    end
+  end
+
+  def fail_election
+    @conversation.election_tracker += 1
+    @election.election_status = "failed"
+    check_doomsday
   end
 end

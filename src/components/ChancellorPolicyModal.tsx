@@ -2,7 +2,7 @@ import React, { useRef, useState, useEffect } from "react";
 import styled, { css } from "styled-components";
 
 import Card, { MiniCard } from "components/common/Card";
-import Button from "components/common/Button";
+import Button, { PrimaryButton } from "components/common/Button";
 import Modal from "components/common/Modal";
 import { get, post } from "utils/request";
 import { Player } from "interfaces";
@@ -19,7 +19,15 @@ interface DataType {
   data: string;
 }
 
-const ChancellorPolicyModal = ({ player }: { player: Player }) => {
+const ChancellorPolicyModal = ({
+  player,
+  canVeto,
+  isForced,
+}: {
+  player: Player;
+  canVeto: boolean;
+  isForced: boolean;
+}) => {
   const modalTriggerRef = useRef(null);
   const [controlData, setControlData] = useState<ControlData>({
     loaded: false,
@@ -27,6 +35,20 @@ const ChancellorPolicyModal = ({ player }: { player: Player }) => {
   const [selected, setSelected] = useState<number>(0);
 
   const submit = async () => {
+    if (!selected) {
+      return;
+    }
+    const policy = controlData.policies[selected - 1];
+    const response = await post(
+      `/api/conversations/${player.conversation_id}/players/${player.id}/chancellor_policy`,
+      { policy }
+    );
+    if (modalTriggerRef.current) {
+      modalTriggerRef.current.removeModal();
+    }
+  };
+
+  const veto = async () => {
     if (!selected) {
       return;
     }
@@ -89,6 +111,9 @@ const ChancellorPolicyModal = ({ player }: { player: Player }) => {
               </Content>
             )}
             <CButton onClick={() => submit()}>Confirm</CButton>
+            {canVeto && !isForced && (
+              <RButton onClick={() => veto()}>Veto</RButton>
+            )}
           </Container>
         </Card>
       </Modal>
@@ -114,6 +139,10 @@ const Container = styled.div`
 `;
 
 const CButton = styled(Button)`
+  margin-top: 20px;
+`;
+
+const RButton = styled(PrimaryButton)`
   margin-top: 20px;
 `;
 

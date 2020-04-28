@@ -64,7 +64,10 @@ const Players = ({ room }: { room: Room }) => {
 
   return (
     <Container>
-      {players && players.map((player) => <PlayerItem player={player} />)}
+      {players &&
+        players.map((player) => (
+          <PlayerItem canVeto={room.facist_policy === 5} player={player} />
+        ))}
     </Container>
   );
 };

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_04_28_145802) do
+ActiveRecord::Schema.define(version: 2020_04_28_192112) do
 
   create_table "conversations", force: :cascade do |t|
     t.string "title"
@@ -25,8 +25,8 @@ ActiveRecord::Schema.define(version: 2020_04_28_145802) do
   end
 
   create_table "elections", force: :cascade do |t|
-    t.integer "president", null: false
-    t.integer "chancellor"
+    t.integer "president_id", null: false
+    t.integer "chancellor_id"
     t.string "election_status", default: "active", null: false
     t.string "policy_draw"
     t.datetime "created_at", precision: 6, null: false

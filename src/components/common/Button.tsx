@@ -1,7 +1,7 @@
 import styled, { css } from "styled-components";
 
 import { CenteredContent, BoxShadow } from "styles/common";
-import { Black, LightGrey, Green, White } from "styles/color";
+import { Black, LightGrey, Green, White, BrightRed } from "styles/color";
 
 const Default = css`
   padding: 10px 25px;
@@ -36,6 +36,19 @@ export const SecondaryButton = styled.button`
   ${Default}
   background: ${LightGrey};
   color: ${Black};
+`;
+
+export const PrimaryButton = styled.button`
+  ${CenteredContent}
+  ${Default}
+  background: ${BrightRed};
+  color: ${White};
+
+  &:active {
+    border: 1px solid ${BrightRed};
+    color: ${BrightRed};
+    background: ${White};
+  }
 `;
 
 export default Button;

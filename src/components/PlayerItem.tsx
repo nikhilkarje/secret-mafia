@@ -15,7 +15,13 @@ import ChancellorPolicyModal from "components/ChancellorPolicyModal";
 import ExamineDeckModal from "components/ExamineDeckModal";
 import ExecutePlayerModal from "components/ExecutePlayerModal";
 
-const PlayerItem = ({ player }: { player: Player }) => {
+const PlayerItem = ({
+  player,
+  canVeto,
+}: {
+  player: Player;
+  canVeto: boolean;
+}) => {
   const { config } = useContext(ConfigContext);
   const isCurrentPlayer = player.user_id === config.user_id;
 
@@ -45,8 +51,14 @@ const PlayerItem = ({ player }: { player: Player }) => {
         <PresidentialPolicyModal player={player} />
       )}
       {isCurrentPlayer &&
-        player.pending_action === "policy_draw_chancellor" && (
-          <ChancellorPolicyModal player={player} />
+        ["policy_draw_chancellor", "policy_draw_chancellor_forced"].indexOf(
+          player.pending_action
+        ) > -1 && (
+          <ChancellorPolicyModal
+            isForced={player.pending_action === "policy_draw_chancellor_forced"}
+            canVeto={canVeto}
+            player={player}
+          />
         )}
       {isCurrentPlayer && player.pending_action === "examine_deck" && (
         <ExamineDeckModal player={player} />

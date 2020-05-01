@@ -84,7 +84,7 @@ module Api::ConversationsHelper
   def check_doomsday
     if @conversation.election_tracker >= 3
       @conversation.election_tracker = 0
-      @conversation.policy_passed = @conversation.policy_order[0]
+      @conversation.policy_passed += @conversation.policy_order[0]
       @conversation.policy_order = @conversation.policy_order[1..-1]
       broadcast_room_message(@conversation.id, "Three elections failed in a row. Frustrated populace enacted a #{@conversation.policy_passed == "0" ? "Liberal" : "Facist"} policy")
     end

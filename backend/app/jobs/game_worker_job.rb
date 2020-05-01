@@ -143,10 +143,10 @@ class GameWorkerJob < ApplicationJob
         reset_election_tracker
         policy_draw
         president = @players.find(@election.president_id)
-        president.set_pending_action(:policy_draw_president)
         broadcast_room_message(@payload[:id], "The president draws three policy and will pass two for the chancellor")
         @conversation.save
         @election.save
+        president.set_pending_action(:policy_draw_president)
       else
         broadcast_room_message(@payload[:id], "The proposed government has failed")
         fail_election

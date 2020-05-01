@@ -57,8 +57,7 @@ class Api::PlayersController < Api::ConversationsController
         current_election = @player.conversation.elections.find_by(:election_status => "active")
         render json: { :type => "presidential_choice", :data => current_election.policy_draw }
         return
-      when Api::Player.action_option[:policy_draw_chancellor]
-      when Api::Player.action_option[:policy_draw_chancellor_forced]
+      when Api::Player.action_option[:policy_draw_chancellor], Api::Player.action_option[:policy_draw_chancellor_forced]
         current_election = @player.conversation.elections.find_by(:election_status => "active")
         render json: { :type => "chancellors_choice", :data => current_election.policy_picked }
         return
@@ -139,7 +138,7 @@ class Api::PlayersController < Api::ConversationsController
         vote = Api::Vote.new({ :player_id => @player.id, :election_id => election.id, :ballot => params[:ballot] })
         if vote.save
           @player.set_pending_action(:default)
-          if election.votes.length === conversation.total_players
+          if election.votes.length === conversation.players.filter_by_active.length
             GameWorkerJob.perform_now("election_results", Api::ConversationSerializer.new(conversation).attributes)
           end
           render json: {}, status: 200
@@ -360,8 +359,7 @@ class Api::PlayersController < Api::ConversationsController
   end
 
   def set_player
-    @player = Api::Player.find_by(:conversation_id => params[:conversation_id], :user_id => session[:user_id],
-                                  :status => Api::Player.status_option[:active])
+    @player = Api::Player.find_by(:conversation_id => params[:conversation_id], :user_id => session[:user_id])
   end
 
   def save_all

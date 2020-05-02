@@ -1,9 +1,13 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  text: MyString
+  text: "Hello"
   conversation: one
+  user: user1
+  name: "Test User"
 
 two:
-  text: MyString
-  conversation: two
+  text: "Hi"
+  conversation: one
+  user: user1
+  name: "Test User"

@@ -12,6 +12,6 @@ module Api::MessagesHelper
   end
 
   def broadcast_room_message(conversation_id, text)
-    broadcast_message({ :conversation_id => conversation_id, :user_id => 6, :name => "Game Room", :text => text })
+    broadcast_message({ :conversation_id => conversation_id, :user_id => 1, :name => "Game Room", :text => text })
   end
 end

@@ -1,0 +1,21 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  title: "Test Room"
+  policy_order: "10110110110111100"
+  players_joined: 1
+
+create:
+  title: "Test Room"
+  policy_order: "10110110110111100"
+  players_joined: 4
+
+role:
+  title: "Test Room"
+  policy_order: "10110110110111100"
+  players_joined: 5
+
+game:
+  title: "Test Room"
+  policy_order: "10110110110111100"
+  players_joined: 5

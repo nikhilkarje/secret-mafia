@@ -2,7 +2,7 @@ require "application_system_test_case"
 
 class Api::UsersTest < ApplicationSystemTestCase
   setup do
-    @api_user = api_users(:one)
+    @api_user = api_users(:user1)
   end
 
   test "visiting the index" do

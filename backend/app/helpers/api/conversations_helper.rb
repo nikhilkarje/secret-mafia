@@ -14,6 +14,11 @@ module Api::ConversationsHelper
     end
   end
 
+  def no_facist(total_players)
+    temp_hash = { "5" => 2 }
+    temp_hash["#{total_players}"]
+  end
+
   def facist_power_broadcast_hash
     { :kill => "President must execute one player",
       :examine_deck => "President gets to examine top 3 cards from the deck",

@@ -1,0 +1,92 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  name: "Test User"
+  conversation: one
+  user: user1
+
+create-one:
+  name: "Test User"
+  conversation: create
+  user: user1
+
+create-two:
+  name: "Test User"
+  conversation: create
+  user: user2
+
+create-three:
+  name: "Test User"
+  conversation: create
+  user: user3
+
+create-four:
+  name: "Test User"
+  conversation: create
+  user: user4
+
+player1:
+  name: "Test User"
+  pending_action: "confirm_role"
+  secret_team_role: "liberal"
+  conversation: role
+  user: user1
+
+player2:
+  name: "Test User"
+  pending_action: "confirm_role"
+  secret_team_role: "liberal"
+  conversation: role
+  user: user2
+
+player3:
+  name: "Test User"
+  pending_action: "confirm_role"
+  secret_team_role: "liberal"
+  conversation: role
+  user: user3
+
+player4:
+  name: "Test User"
+  pending_action: "confirm_role"
+  secret_team_role: "facist"
+  conversation: role
+  user: user4
+
+player5:
+  name: "Test User"
+  secret_team_role: "facist"
+  secret_special_role: "hitler"
+  conversation: role
+  user: user5
+
+d_player1:
+  name: "Test User"
+  secret_team_role: "liberal"
+  conversation: game
+  user: user1
+
+d_player2:
+  name: "Test User"
+  secret_team_role: "liberal"
+  conversation: game
+  user: user2
+
+d_player3:
+  name: "Test User"
+  secret_team_role: "liberal"
+  conversation: game
+  user: user3
+
+d_player4:
+  name: "Test User"
+  secret_team_role: "facist"
+  conversation: game
+  user: user4
+
+d_player5:
+  name: "Test User"
+  secret_team_role: "facist"
+  secret_special_role: "hitler"
+  conversation: game
+  user: user5

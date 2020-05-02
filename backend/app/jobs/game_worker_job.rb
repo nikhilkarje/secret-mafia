@@ -11,7 +11,7 @@ class GameWorkerJob < ApplicationJob
   end
 
   def assign_roles
-    facist_indexes = rand_n(2, @conversation.total_players)
+    facist_indexes = rand_n(no_facist(@conversation.total_players), @conversation.total_players)
     hitler_index = rand_n(1, facist_indexes.length)[0]
     facist_players = []
     liberal_players = []
@@ -41,8 +41,8 @@ class GameWorkerJob < ApplicationJob
       president_index = rand_n(1, @conversation.total_players)
       current_president = @players[president_index[0]]
     else
-      last_president = @players.find(last_election.president_id)
-      last_chancellor = @players.find(last_election.chancellor_id)
+      last_president = last_election.president
+      last_chancellor = last_election.chancellor
       last_president.set_public_role(:default)
       last_chancellor.set_public_role(:default)
       current_president = last_president.next_active
@@ -105,7 +105,7 @@ class GameWorkerJob < ApplicationJob
     if last_policy == "1"
       facist_power = facist_power_hash["#{@conversation.total_players}"]["#{@conversation.policy_passed.count("1")}"]
       if facist_power
-        president = Api::Player.find(@conversation.elections.last.president_id)
+        president = @conversation.elections.last.president
         president.set_pending_action(facist_power)
         broadcast_room_message(@payload[:id], facist_power_broadcast_hash[facist_power])
         return true
@@ -142,7 +142,7 @@ class GameWorkerJob < ApplicationJob
         broadcast_room_message(@payload[:id], "The proposed government is established. Assembly is now in session")
         reset_election_tracker
         policy_draw
-        president = @players.find(@election.president_id)
+        president = @election.president
         broadcast_room_message(@payload[:id], "The president draws three policy and will pass two for the chancellor")
         @conversation.save
         @election.save

@@ -202,8 +202,7 @@ class Api::PlayersController < Api::ConversationsController
       facist_policies = @conversation.policy_passed.count("1")
       if @player.id == @election.chancellor_id && facist_policies == 5
         @player.set_pending_action(:default)
-        president = Api::Player.find(@election.president_id)
-        president.set_pending_action(:confirm_veto)
+        @election.president.set_pending_action(:confirm_veto)
         render json: {}, status: 200
       end
     end

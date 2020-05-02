@@ -2,7 +2,8 @@ require "test_helper"
 
 class Api::UsersControllerTest < ActionDispatch::IntegrationTest
   setup do
-    @api_user = api_users(:one)
+    @api_user = api_users(:other)
+    sign_in_as(@api_user)
   end
 
   test "should get index" do
@@ -17,7 +18,7 @@ class Api::UsersControllerTest < ActionDispatch::IntegrationTest
 
   test "should create api_user" do
     assert_difference("Api::User.count") do
-      post api_users_url, params: { api_user: { email: @api_user.email, first_name: @api_user.first_name, last_name: @api_user.last_name, password_digest: @api_user.password_digest } }
+      post api_users_url, params: { api_user: { email: "n@k.com", first_name: @api_user.first_name, last_name: @api_user.last_name, password: "password" } }
     end
 
     assert_redirected_to api_user_url(Api::User.last)

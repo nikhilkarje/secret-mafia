@@ -18,7 +18,7 @@ class Api::ConversationsController < ApplicationController
   def create
     conversation = Api::Conversation.new(conversation_params.merge({ :policy_order => generate_policy_order }))
     if conversation.save
-      head :ok
+      render json: conversation
     end
   end
 

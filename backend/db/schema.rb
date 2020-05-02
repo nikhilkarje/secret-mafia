@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_04_28_192112) do
+ActiveRecord::Schema.define(version: 2020_05_02_105833) do
 
   create_table "conversations", force: :cascade do |t|
     t.string "title"
@@ -25,8 +25,6 @@ ActiveRecord::Schema.define(version: 2020_04_28_192112) do
   end
 
   create_table "elections", force: :cascade do |t|
-    t.integer "president_id", null: false
-    t.integer "chancellor_id"
     t.string "election_status", default: "active", null: false
     t.string "policy_draw"
     t.datetime "created_at", precision: 6, null: false
@@ -58,6 +56,8 @@ ActiveRecord::Schema.define(version: 2020_04_28_192112) do
     t.datetime "updated_at", precision: 6, null: false
     t.string "pending_action", default: "none", null: false
     t.string "name", null: false
+    t.integer "president_id"
+    t.integer "chancellor_id"
     t.index ["conversation_id"], name: "index_players_on_conversation_id"
     t.index ["user_id"], name: "index_players_on_user_id"
   end

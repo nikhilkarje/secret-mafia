@@ -3,6 +3,8 @@ include Api::ConversationsHelper
 class Api::Player < ApplicationRecord
   belongs_to :conversation
   belongs_to :user
+  belongs_to :election, :class_name => "Api::Election", :foreign_key => "president_id"
+  belongs_to :election, :class_name => "Api::Election", :foreign_key => "chancellor_id"
   has_many :votes, dependent: :destroy
   scope :filter_by_active, -> { where status: self.status_option[:active] }
 
@@ -34,6 +36,7 @@ class Api::Player < ApplicationRecord
                    :policy_draw_chancellor_forced, :confirm_veto, :vote, :confirm_investigation, :end_game,
                    :default].concat(facist_power_list())
     action_list.each { |key| action_option_hash[key] = key.to_s }
+    action_option_hash.merge!({ :default => "none" })
     action_option_hash
   end
 

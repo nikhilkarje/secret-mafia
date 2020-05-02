@@ -35,3 +35,10 @@ other:
   last_name: "User"
   email: "tn@u.com"
   password_digest: "$2a$12$SlxlCe.PEnyh8ufpiXv4pOtEG6/LCDwCs9EC55OcXzm99KIE4jRFq"
+
+gamebot:
+  first_name: "Game"
+  last_name: "Room"
+  email: "g@r.com"
+  role: "game_bot"
+  password_digest: "$2a$12$SlxlCe.PEnyh8ufpiXv4pOtEG6/LCDwCs9EC55OcXzm99KIE4jRFq"

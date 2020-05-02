@@ -37,7 +37,7 @@ class Api::GameFlowRoleTest < ActionDispatch::IntegrationTest
   end
 
   test "should confirm role" do
-    assert_difference(@players.where(:pending_action => "none")) do
+    assert_difference("@players.where(:pending_action => 'none').count") do
       post api_conversation_player_confirm_role_url({ player_id: @player.id, conversation_id: @conversation.id })
     end
     assert_response :success
@@ -49,7 +49,8 @@ class Api::GameFlowRoleTest < ActionDispatch::IntegrationTest
       confirm_roles
     end
     assert_equal 0, @players.where(:pending_action => "confirm_role").length
-    president = @players.find_by(:public_role => "president")
+    election = Api::Election.last
+    president = election.president
     assert_not_nil president
     assert_equal "choose_chancellor", president.pending_action
   end

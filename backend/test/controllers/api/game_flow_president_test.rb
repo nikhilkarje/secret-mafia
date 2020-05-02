@@ -8,9 +8,8 @@ class Api::GameFlowElectionTest < ActionDispatch::IntegrationTest
     @conversation = api_conversations(:game)
     @players = @conversation.players.filter_by_active
     @player = @players.find_by(:user_id => @api_user.id)
-    @player.pending_state = "choose_chancellor"
-    @player.public_role = "president"
-    @player.save
+    @election = api_elections(:game)
+    @player.set_president(@election.id)
   end
 
   test "should get pending action for new president" do

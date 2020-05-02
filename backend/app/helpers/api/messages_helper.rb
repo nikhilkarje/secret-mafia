@@ -12,6 +12,7 @@ module Api::MessagesHelper
   end
 
   def broadcast_room_message(conversation_id, text)
-    broadcast_message({ :conversation_id => conversation_id, :user_id => 1, :name => "Game Room", :text => text })
+    admin_user = Api::User.find_by(:role => "game_bot")
+    broadcast_message({ :conversation_id => conversation_id, :user_id => admin_user.id, :name => admin_user.name, :text => text })
   end
 end

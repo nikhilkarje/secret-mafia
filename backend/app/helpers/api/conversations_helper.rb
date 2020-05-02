@@ -80,10 +80,9 @@ module Api::ConversationsHelper
   end
 
   def nominate_president(player)
-    election = Api::Election.new({ :conversation_id => @conversation.id, :president_id => player.id })
+    election = Api::Election.new({ :conversation_id => @conversation.id })
     election.save
-    player.set_public_role(:president)
-    player.set_pending_action(:choose_chancellor)
+    player.set_president(election.id)
   end
 
   def check_doomsday

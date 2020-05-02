@@ -30,6 +30,19 @@ class Api::Player < ApplicationRecord
     self.save
   end
 
+  def set_president(election_id)
+    self.president_id = election_id
+    if election_id
+      self.pending_action = Api::Player.action_option[:choose_chancellor]
+    end
+    self.save
+  end
+
+  def set_chancellor(election_id)
+    self.chancellor_id = election_id
+    self.save
+  end
+
   def self.action_option
     action_option_hash = {}
     action_list = [:confirm_role, :choose_chancellor, :policy_draw_president, :policy_draw_chancellor,

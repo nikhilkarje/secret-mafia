@@ -55,6 +55,7 @@ player4:
 
 player5:
   name: "Test User"
+  pending_action: "confirm_role"
   secret_team_role: "facist"
   secret_special_role: "hitler"
   conversation: role

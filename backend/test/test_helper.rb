@@ -16,7 +16,6 @@ class ActiveSupport::TestCase
   end
 
   def join_players(conversation, total, start_with = 2)
-    puts "=============Here==================="
     count = start_with
     for value in Array.new(total)
       user = api_users("user#{count}".to_sym)

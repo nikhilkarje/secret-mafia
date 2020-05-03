@@ -133,7 +133,6 @@ class GameWorkerJob < ApplicationJob
       end
     when "election_results"
       @election = @conversation.elections.find_by(:election_status => "active")
-
       if @conversation.policy_order.length < 3
         reorder_policy
       end

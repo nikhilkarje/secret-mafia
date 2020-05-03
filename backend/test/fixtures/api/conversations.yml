@@ -26,3 +26,9 @@ failed:
   policy_order: "10110110110111100"
   players_joined: 5
   election_tracker: 2
+
+liberal:
+  title: "Test Room"
+  policy_order: "011111"
+  players_joined: 5
+  policy_passed: "000011111"

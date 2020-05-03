@@ -1,17 +1,12 @@
 require "test_helper"
 include Api::ConversationsHelper
 
-def reload_all
-  @conversation.reload
-  @election.reload
-  @player.reload
-end
-
 class Api::GameFlowDoomsdayTest < ActionDispatch::IntegrationTest
   setup do
     @api_user = api_users(:user5)
     sign_in_as(@api_user)
     @conversation = api_conversations(:failed)
+    @election = api_elections(:failed)
     @player = @conversation.players.find_by(:user_id => @api_user.id)
   end
 

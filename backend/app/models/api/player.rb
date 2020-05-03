@@ -3,8 +3,8 @@ include Api::ConversationsHelper
 class Api::Player < ApplicationRecord
   belongs_to :conversation
   belongs_to :user
-  belongs_to :election, :class_name => "Api::Election", :foreign_key => "president_id"
-  belongs_to :election, :class_name => "Api::Election", :foreign_key => "chancellor_id"
+  belongs_to :president_election, :class_name => "Api::Election", :foreign_key => "president_id"
+  belongs_to :chancellor_election, :class_name => "Api::Election", :foreign_key => "chancellor_id"
   has_many :votes, dependent: :destroy
   scope :filter_by_active, -> { where status: self.status_option[:active] }
 

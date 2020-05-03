@@ -36,7 +36,21 @@ failed_player<%= n+1 %>:
   name: "Failed Player#{n+1}"
   secret_team_role: <%= n > 2 ? "facist" : "liberal" %>
   secret_special_role: <%= n == 4 ? "hitler" : nil %>
-  pending_action: <%= n == 1 ? "vote" : "none" %>
+  pending_action: <%= n == 4 ? "vote" : "none" %>
+  president_id: <%= n == 0 ? ActiveRecord::FixtureSet.identify(:failed) : nil%>
+  chancellor_id: <%= n == 1 ? ActiveRecord::FixtureSet.identify(:failed) : nil%>
   conversation: failed
   user: user<%= n+1 %>
+<% end %>
+
+<% 5.times do |n| %>
+liberal_player<%= n+1 %>:
+  name: <%="Liberal Player#{n+1}"%>
+  secret_team_role: <%= n > 2 ? "facist" : "liberal" %>
+  secret_special_role: <%= n == 4 ? "hitler" : nil %>
+  conversation: liberal
+  user: user<%= n+1 %>
+  president_id: <%= n == 0 ? ActiveRecord::FixtureSet.identify(:liberal) : nil%>
+  chancellor_id: <%= n == 1 ? ActiveRecord::FixtureSet.identify(:liberal) : nil%>
+  pending_action: <%= n == 1 ? "policy_draw_chancellor" : "none" %>
 <% end %>

@@ -103,7 +103,7 @@ class Api::GameFlowElectionTest < ActionDispatch::IntegrationTest
     assert_equal @election.policy_draw[0..1], @election.policy_picked
     assert_equal @election.policy_draw[2], @conversation.discard_pile
     chancellor = @election.chancellor
-    assert_equal "none", @player.pending_action
+    assert_not_equal "policy_draw_president", @player.pending_action
     # Pending action of chancellor
     @player = chancellor
     response = check_pending_action("policy_draw_chancellor", "chancellors_choice", @election.policy_picked)
@@ -117,7 +117,7 @@ class Api::GameFlowElectionTest < ActionDispatch::IntegrationTest
     assert_equal @election.policy_picked[0], @conversation.policy_passed
     assert_equal @election.policy_picked[1], @conversation.discard_pile.last
     assert_equal "passed", @election.election_status
-    assert_equal "none", @player.pending_action
+    assert_not_equal "policy_draw_chancellor", @player.pending_action
     president.reload
     assert_nil president.president_id
     assert_nil @player.chancellor_id

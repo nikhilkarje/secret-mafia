@@ -60,9 +60,6 @@ class Api::PlayersController < Api::ConversationsController
         current_election = @player.conversation.elections.find_by(:election_status => "active")
         render json: { :type => "chancellors_choice", :data => current_election.policy_picked }
         return
-      when current_election = @player.conversation.elections.find_by(:election_status => "active")
-        render json: { :type => "chancellors_choice_forced", :data => current_election.policy_picked }
-        return
       when Api::Player.action_option[:kill]
         render json: { :type => "kill", :data => other_players }
         return

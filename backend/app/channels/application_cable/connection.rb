@@ -13,7 +13,6 @@ module ApplicationCable
     end
 
     def find_verified_user
-      puts session.inspect
       if session && session["user_id"] && verified_user = Api::User.find(session["user_id"])
         verified_user
       else

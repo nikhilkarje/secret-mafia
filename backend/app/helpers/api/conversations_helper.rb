@@ -61,7 +61,7 @@ module Api::ConversationsHelper
     end
 
     facist_players = @players.where(:secret_team_role => "facist")
-    secret_hitler = @players.where(:secret_special_role => "hitler")
+    secret_hitler = @players.find_by(:secret_special_role => "hitler")
     liberal_players = @players.where(:secret_team_role => "liberal")
     message = "Team Facist: "
     facist_players.each do |player|

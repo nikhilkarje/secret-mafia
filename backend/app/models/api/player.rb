@@ -25,11 +25,6 @@ class Api::Player < ApplicationRecord
     { :default => "default", :president => "president", :chancellor => "chancellor" }
   end
 
-  def set_public_role(role)
-    self.public_role = Api::Player.public_role_option[role]
-    self.save
-  end
-
   def set_president(election_id)
     self.president_id = election_id
     if election_id

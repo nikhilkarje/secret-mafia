@@ -33,4 +33,25 @@ class ActiveSupport::TestCase
       post api_conversation_player_confirm_role_url({ player_id: player.id, conversation_id: @conversation.id })
     end
   end
+
+  def choose_chancellor
+    post api_conversation_player_confirm_chancellor_url({ player_id: @player.id, conversation_id: @conversation.id }),
+         :params => { :chancellor_id => @player.next_active.id }
+  end
+
+  def cast_votes(player, ballot)
+    sign_in_as(player.user)
+    post api_conversation_player_cast_vote_url({ player_id: player.id, conversation_id: @conversation.id }),
+         :params => { :ballot => ballot }
+  end
+
+  def check_pending_action(pending_action, type, data)
+    sign_in_as(@player.user)
+    assert_equal pending_action, @player.pending_action
+    get api_conversation_player_pending_action_url({ player_id: @player.id, conversation_id: @conversation.id })
+    assert_response :success
+    response = JSON.parse(@response.body)
+    assert_equal type, response["type"]
+    assert_equal data, response["data"]
+  end
 end

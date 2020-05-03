@@ -50,8 +50,7 @@ class Api::PlayersController < Api::ConversationsController
         return
       when Api::Player.action_option[:vote]
         current_election = @player.conversation.elections.find_by(:election_status => "active")
-        chancellor = Api::Player.find(current_election.chancellor_id)
-        render json: { :type => "election_day", :data => Api::PlayerSerializer.new(chancellor) }
+        render json: { :type => "election_day", :data => Api::PlayerSerializer.new(current_election.chancellor) }
         return
       when Api::Player.action_option[:policy_draw_president]
         current_election = @player.conversation.elections.find_by(:election_status => "active")
@@ -116,9 +115,7 @@ class Api::PlayersController < Api::ConversationsController
       chancellor = conversation.players.filter_by_active.find(params[:chancellor_id]) if params[:chancellor_id]
       election = conversation.elections.find_by(:election_status => "active")
       if chancellor && election
-        election.chancellor_id = chancellor.id
-        election.save
-        chancellor.set_public_role(:chancellor)
+        chancellor.set_chancellor(election.id)
         @player.set_pending_action(:default)
         broadcast_room_message(conversation.id, "#{chancellor.name} is nominated for Chancellor. Voting will now begin.")
         GameWorkerJob.perform_now("start_voting", Api::ConversationSerializer.new(conversation).attributes)
@@ -152,16 +149,15 @@ class Api::PlayersController < Api::ConversationsController
   def presidential_policy
     if @player && @player.check_pending_action(:policy_draw_president)
       @conversation = @player.conversation
-      @election = @conversation.elections.find_by(:election_status => "active")
-      policy_draw = @election.policy_draw
+      @election = Api::Election.find(@player.president_id)
+      policy_draw = @election.policy_draw.dup
       policy = params[:policy]
-      discarded_policy = policy_draw.slice!(policy[0]) && policy_draw.slice!(policy[1])
-      if policy && policy.length == 2 && policy.count("01") == 2 && discarded_policy && discarded_policy.length == 1
+      policy_draw.slice!(policy[0]) && policy_draw.slice!(policy[1])
+      if policy && policy.length == 2 && policy.count("01") == 2 && policy_draw && policy_draw.length == 1
         @election.policy_picked = policy
-        @conversation.discard_pile += discarded_policy
-        chancellor = Api::Player.find(@election.chancellor_id)
+        @conversation.discard_pile += policy_draw
         save_all
-        chancellor.set_pending_action(:policy_draw_chancellor)
+        @election.chancellor.set_pending_action(:policy_draw_chancellor)
         @player.set_pending_action(:default)
         broadcast_room_message(@conversation.id, "The chancellor is picking one policy to pass out of two")
         render json: {}, status: 200
@@ -174,22 +170,20 @@ class Api::PlayersController < Api::ConversationsController
   def chancellor_policy
     if @player && @player.check_pending_action(:policy_draw_chancellor) || @player.check_pending_action(:policy_draw_chancellor_forced)
       @conversation = @player.conversation
-      @election = @conversation.elections.find_by(:election_status => "active")
-      if @player.id == @election.chancellor_id
-        policy_picked = @election.policy_picked
-        policy = params[:policy]
-        discarded_policy = policy_picked.slice!(policy)
-        if policy && policy.length == 1 && policy.count("01") == 1 && discarded_policy && discarded_policy.length == 1
-          @conversation.policy_passed += policy
-          @conversation.discard_pile += discarded_policy
-          @election.election_status = "passed"
-          save_all
-          @player.set_pending_action(:default)
-          broadcast_room_message(@conversation.id, "Government has passed a #{policy == "0" ? "Liberal" : "Facist"} policy")
-          GameWorkerJob.perform_now("end_election", Api::ConversationSerializer.new(@conversation).attributes)
-          render json: {}, status: 200
-          return
-        end
+      @election = Api::Election.find(@player.chancellor_id)
+      policy_picked = @election.policy_picked.dup
+      policy = params[:policy]
+      policy_picked.slice!(policy)
+      if policy && policy.length == 1 && policy.count("01") == 1 && policy_picked && policy_picked.length == 1
+        @conversation.policy_passed += policy
+        @conversation.discard_pile += policy_picked
+        @election.election_status = "passed"
+        save_all
+        @player.set_pending_action(:default)
+        broadcast_room_message(@conversation.id, "Government has passed a #{policy == "0" ? "Liberal" : "Facist"} policy")
+        GameWorkerJob.perform_now("end_election", Api::ConversationSerializer.new(@conversation).attributes)
+        render json: {}, status: 200
+        return
       end
     end
     render json: {}, status: 401
@@ -287,11 +281,11 @@ class Api::PlayersController < Api::ConversationsController
       @conversation = @player.conversation
       new_president = @conversation.players.filter_by_active.find(params[:president_id])
       if new_president
-        nominate_president(new_president)
-        @player.set_public_role(:default)
+        @player.set_president(nil)
         last_chancellor = Api::Player.find(:conversation_id => @conversation.id, :public_role => Api::Player.public_role_option[:chancellor])
-        last_chancellor.set_public_role(:default)
+        last_chancellor.set_chancellor(nil)
         @player.set_pending_action(:default)
+        nominate_president(new_president)
         broadcast_room_message(@conversation.id, "#{new_president.name} has been nomminated as the new President by the old President")
         render json: {}, status: 200
         return

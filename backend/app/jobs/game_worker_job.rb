@@ -43,8 +43,8 @@ class GameWorkerJob < ApplicationJob
     else
       last_president = last_election.president
       last_chancellor = last_election.chancellor
-      last_president.set_public_role(:default)
-      last_chancellor.set_public_role(:default)
+      last_president.set_president(nil)
+      last_chancellor.set_chancellor(nil)
       current_president = last_president.next_active
     end
     # current_president = Api::Player.find(1)

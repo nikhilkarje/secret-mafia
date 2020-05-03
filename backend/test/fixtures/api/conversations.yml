@@ -19,3 +19,10 @@ game:
   title: "Test Room"
   policy_order: "10110110110111100"
   players_joined: 5
+  election_tracker: 1
+
+failed:
+  title: "Test Room"
+  policy_order: "10110110110111100"
+  players_joined: 5
+  election_tracker: 2

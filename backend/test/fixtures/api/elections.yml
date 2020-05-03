@@ -6,3 +6,6 @@
 # #
 game:
   conversation: game
+
+failed:
+  conversation: failed

@@ -52,5 +52,6 @@ class ActiveSupport::TestCase
     response = JSON.parse(@response.body)
     assert_equal type, response["type"]
     assert_equal data, response["data"]
+    return response
   end
 end

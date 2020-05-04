@@ -71,12 +71,12 @@ module Api::ConversationsHelper
         message += "#{player.name} "
       end
     end
-    broadcast_room_message(@payload[:id], message)
+    broadcast_room_message(@conversation.id, message)
     message = "Team Liberal: "
     liberal_players.each do |player|
       message += "#{player.name} "
     end
-    broadcast_room_message(@payload[:id], message)
+    broadcast_room_message(@conversation.id, message)
   end
 
   def nominate_president(player)

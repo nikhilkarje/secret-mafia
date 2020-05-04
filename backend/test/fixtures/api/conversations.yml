@@ -32,3 +32,16 @@ liberal:
   policy_order: "011111"
   players_joined: 5
   policy_passed: "000011111"
+
+deck:
+  title: "Test Room"
+  policy_order: "111111110"
+  players_joined: 5
+  policy_passed: "000011"
+
+examine_player:
+  title: "Test Room"
+  policy_order: "1111111110"
+  total_players: 7
+  players_joined: 7
+  policy_passed: "00001"

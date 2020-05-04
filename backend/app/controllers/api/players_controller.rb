@@ -38,7 +38,7 @@ class Api::PlayersController < Api::ConversationsController
         case @player.secret_team_role
         when "facist"
           facist_players = @player.conversation.players.where(:secret_team_role => "facist")
-          serialized_data = ActiveModel::Serializer::ArraySerializer.new(facist_players, each_serializer: Api::PlayerSerializer, show_hitler: true)
+          serialized_data = ActiveModel::Serializer::CollectionSerializer.new(facist_players, each_serializer: Api::PlayerSerializer, show_hitler: true)
           render json: { :type => "facist_conferrence", :data => serialized_data }
           return
         when "liberal"
@@ -71,17 +71,17 @@ class Api::PlayersController < Api::ConversationsController
         render json: { :type => "examine_player", :data => other_players }
         return
       when Api::Player.action_option[:confirm_investigation]
-        player = Api.Player.find_by(:conversation_id => @player.conversation_id, :status => Api::Player.status_option[:investigated])
+        player = Api::Player.find_by(:conversation_id => @player.conversation_id, :status => Api::Player.status_option[:investigated])
         render json: { :type => "confirm_investigation", :data => Api::PlayerSerializer.new(player, :show_team => true) }
         return
-      when Api::Player.action_option[:pick_president]
-        render json: { :type => "pick_president", :data => other_players }
+      when Api::Player.action_option[:choose_president]
+        render json: { :type => "choose_president", :data => other_players }
         return
       when Api::Player.action_option[:end_game]
         @conversation = @player.conversation
         @players = @conversation.players
-        serialized_data = ActiveModel::Serializer::ArraySerializer.new(@players, each_serializer: Api::PlayerSerializer,
-                                                                                 show_team: true, show_hitler: true)
+        serialized_data = ActiveModel::Serializer::CollectionSerializer.new(@players, each_serializer: Api::PlayerSerializer,
+                                                                                      show_team: true, show_hitler: true)
         message = winning_message
         render json: { :type => "end_game", :message => message, :data => serialized_data }
         return
@@ -261,8 +261,8 @@ class Api::PlayersController < Api::ConversationsController
   end
 
   def confirm_investigation
-    if @player && @player.check_pending_action(:confirm_player_role)
-      investigated_player = Api.Player.find_by(:conversation_id => @player.conversation_id, :status => Api::Player.status_option[:investigated])
+    if @player && @player.check_pending_action(:confirm_investigation)
+      investigated_player = Api::Player.find_by(:conversation_id => @player.conversation_id, :status => Api::Player.status_option[:investigated])
       investigated_player.set_status(:active)
       @player.set_pending_action(:default)
       GameWorkerJob.perform_now("start_election", Api::ConversationSerializer.new(@player.conversation).attributes)
@@ -278,8 +278,9 @@ class Api::PlayersController < Api::ConversationsController
       @conversation = @player.conversation
       new_president = @conversation.players.filter_by_active.find(params[:president_id])
       if new_president
+        active_election = @player.president_election
         @player.set_president(nil)
-        last_chancellor = Api::Player.find(:conversation_id => @conversation.id, :public_role => Api::Player.public_role_option[:chancellor])
+        last_chancellor = active_election.chancellor
         last_chancellor.set_chancellor(nil)
         @player.set_pending_action(:default)
         nominate_president(new_president)
@@ -320,10 +321,8 @@ class Api::PlayersController < Api::ConversationsController
   end
 
   def other_players
-    other_players_list = []
-    players = Api::Player.where(:conversation_id => @player.conversation_id, :status => Api::Player.status_option[:active])
-    players.each { |player| other_players_list << Api::PlayerSerializer.new(player) unless player.id == @player.id }
-    other_players_list
+    players = @player.conversation.players.filter_by_active.where.not(:id => @player.id)
+    ActiveModel::Serializer::CollectionSerializer.new(players, each_serializer: Api::PlayerSerializer)
   end
 
   def elligible_players

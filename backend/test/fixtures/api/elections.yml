@@ -14,3 +14,13 @@ liberal:
   conversation: liberal
   policy_draw: "011"
   policy_picked: "01"
+
+deck:
+  conversation: deck
+  policy_draw: "111"
+  policy_picked: "11"
+
+examine_player:
+  conversation: examine_player
+  policy_draw: "111"
+  policy_picked: "11"

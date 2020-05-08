@@ -18,8 +18,10 @@ export interface Player {
   name: String;
   status: string;
   pending_action: string;
-  public_role: string;
+  president_id?: number;
+  chancellor_id?: number;
   secret_special_role?: string;
+  secret_team_role?: string;
 }
 
 export interface Message {

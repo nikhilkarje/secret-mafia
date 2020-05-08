@@ -14,6 +14,8 @@ import PresidentialPolicyModal from "components/PresidentialPolicyModal";
 import ChancellorPolicyModal from "components/ChancellorPolicyModal";
 import ExamineDeckModal from "components/ExamineDeckModal";
 import ExecutePlayerModal from "components/ExecutePlayerModal";
+import ConfirmVetoModal from "components/ConfirmVetoModal";
+import EndGameModal from "components/EndGameModal";
 
 const PlayerItem = ({
   player,
@@ -33,10 +35,8 @@ const PlayerItem = ({
             player.pending_action !== "default") && <Spinner />}
           {player.name}
         </MiniCard>
-        {player.public_role === "president" && <PMiniCard>President</PMiniCard>}
-        {player.public_role === "chancellor" && (
-          <PMiniCard>Chancellor</PMiniCard>
-        )}
+        {player.president_id && <PMiniCard>President</PMiniCard>}
+        {player.chancellor_id && <PMiniCard>Chancellor</PMiniCard>}
       </CardWrapper>
       {isCurrentPlayer && player.pending_action === "confirm_role" && (
         <RoleConfirmModal player={player} />
@@ -65,6 +65,12 @@ const PlayerItem = ({
       )}
       {isCurrentPlayer && player.pending_action === "kill" && (
         <ExecutePlayerModal player={player} />
+      )}
+      {isCurrentPlayer && player.pending_action === "confirm_veto" && (
+        <ConfirmVetoModal player={player} />
+      )}
+      {isCurrentPlayer && player.pending_action === "end_game" && (
+        <EndGameModal player={player} />
       )}
     </>
   );

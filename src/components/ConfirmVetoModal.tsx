@@ -19,43 +19,16 @@ interface DataType {
   data: string;
 }
 
-const ChancellorPolicyModal = ({
-  player,
-  canVeto,
-  isForced,
-}: {
-  player: Player;
-  canVeto: boolean;
-  isForced: boolean;
-}) => {
+const ConfirmVetoModal = ({ player }: { player: Player }) => {
   const modalTriggerRef = useRef(null);
   const [controlData, setControlData] = useState<ControlData>({
     loaded: false,
   });
-  const [selected, setSelected] = useState<number>(0);
 
-  const submit = async () => {
-    if (!selected) {
-      return;
-    }
-    const policy = controlData.policies[selected - 1];
+  const submit = async (confirm_veto: boolean) => {
     const response = await post(
-      `/api/conversations/${player.conversation_id}/players/${player.id}/chancellor_policy`,
-      { policy }
-    );
-    if (modalTriggerRef.current) {
-      modalTriggerRef.current.removeModal();
-    }
-  };
-
-  const veto = async () => {
-    if (!selected) {
-      return;
-    }
-    const policy = controlData.policies[selected - 1];
-    const response = await post(
-      `/api/conversations/${player.conversation_id}/players/${player.id}/veto`,
-      {}
+      `/api/conversations/${player.conversation_id}/players/${player.id}/confirm_veto`,
+      { confirm_veto }
     );
     if (modalTriggerRef.current) {
       modalTriggerRef.current.removeModal();
@@ -67,7 +40,8 @@ const ChancellorPolicyModal = ({
     setControlData({
       loaded: true,
       policies,
-      message: "Choose one policy to implement",
+      message:
+        "Chancellor has proposed to veto current session draw. Do you confirm?",
     });
   };
 
@@ -99,21 +73,13 @@ const ChancellorPolicyModal = ({
               <Content>
                 {controlData.policies.map((policy, index) => (
                   <CardWrapper key={index}>
-                    <MiniCard
-                      isSelectable={true}
-                      isActive={selected === index + 1}
-                      onClick={() => setSelected(index + 1)}
-                    >
-                      {policy === "0" ? "Liberal" : "Facist"}
-                    </MiniCard>
+                    <MiniCard>{policy === "0" ? "Liberal" : "Facist"}</MiniCard>
                   </CardWrapper>
                 ))}
               </Content>
             )}
-            <CButton onClick={() => submit()}>Confirm</CButton>
-            {canVeto && !isForced && (
-              <RButton onClick={() => veto()}>Veto</RButton>
-            )}
+            <CButton onClick={() => submit(true)}>Confirm</CButton>
+            <RButton onClick={() => submit(false)}>Deny</RButton>
           </Container>
         </Card>
       </Modal>
@@ -146,4 +112,4 @@ const RButton = styled(PrimaryButton)`
   margin-top: 20px;
 `;
 
-export default ChancellorPolicyModal;
+export default ConfirmVetoModal;

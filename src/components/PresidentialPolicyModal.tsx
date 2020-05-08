@@ -36,9 +36,7 @@ const PresidentialPolicyModal = ({ player }: { player: Player }) => {
       `/api/conversations/${player.conversation_id}/players/${player.id}/presidential_policy`,
       { policy }
     );
-    if (modalTriggerRef.current) {
-      modalTriggerRef.current.removeModal();
-    }
+    setControlData({ loaded: false });
   };
 
   const updateSelected = (index: number) => {
@@ -70,36 +68,35 @@ const PresidentialPolicyModal = ({ player }: { player: Player }) => {
     fetchActionData();
   }, []);
 
-  useEffect(() => {
-    if (controlData.loaded) {
-      modalTriggerRef.current.addModal();
-    }
-  }, [controlData]);
-
   return (
     controlData.loaded && (
-      <Modal ref={modalTriggerRef} hideClose>
-        <Card>
-          <Container>
-            <div>{controlData.message}</div>
-            {controlData.policies && (
-              <Content>
-                {controlData.policies.map((policy, index) => (
-                  <CardWrapper key={index}>
-                    <MiniCard
-                      isSelectable={true}
-                      isActive={selected.indexOf(index) !== -1}
-                      onClick={() => updateSelected(index)}
-                    >
-                      {policy === "0" ? "Liberal" : "Facist"}
-                    </MiniCard>
-                  </CardWrapper>
-                ))}
-              </Content>
-            )}
-            <CButton onClick={() => submit()}>Confirm</CButton>
-          </Container>
-        </Card>
+      <Modal hideClose>
+        {({ addModal }) => {
+          addModal();
+          return (
+            <Card>
+              <Container>
+                <div>{controlData.message}</div>
+                {controlData.policies && (
+                  <Content>
+                    {controlData.policies.map((policy, index) => (
+                      <CardWrapper key={index}>
+                        <MiniCard
+                          isSelectable={true}
+                          isActive={selected.indexOf(index) !== -1}
+                          onClick={() => updateSelected(index)}
+                        >
+                          {policy === "0" ? "Liberal" : "Fascist"}
+                        </MiniCard>
+                      </CardWrapper>
+                    ))}
+                  </Content>
+                )}
+                <CButton onClick={() => submit()}>Confirm</CButton>
+              </Container>
+            </Card>
+          );
+        }}
       </Modal>
     )
   );

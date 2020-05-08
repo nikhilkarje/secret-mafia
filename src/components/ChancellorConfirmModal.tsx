@@ -34,9 +34,7 @@ const ChancellorConfirmModal = ({ player }: { player: Player }) => {
       `/api/conversations/${player.conversation_id}/players/${player.id}/confirm_chancellor`,
       { chancellor_id: chancellorId }
     );
-    if (modalTriggerRef.current) {
-      modalTriggerRef.current.removeModal();
-    }
+    setControlData({ loaded: false });
   };
 
   const handleActionData = (data: DataType) => {
@@ -60,36 +58,35 @@ const ChancellorConfirmModal = ({ player }: { player: Player }) => {
     fetchActionData();
   }, []);
 
-  useEffect(() => {
-    if (controlData.loaded) {
-      modalTriggerRef.current.addModal();
-    }
-  }, [controlData]);
-
   return (
     controlData.loaded && (
-      <Modal ref={modalTriggerRef} hideClose>
-        <Card>
-          <Container>
-            <div>{controlData.message}</div>
-            {controlData.players && (
-              <Content>
-                {controlData.players.map((player) => (
-                  <CardWrapper key={player.id}>
-                    <MiniCard
-                      isSelectable={true}
-                      isActive={chancellorId === player.id}
-                      onClick={() => setChancellorId(player.id)}
-                    >
-                      {player.name}
-                    </MiniCard>
-                  </CardWrapper>
-                ))}
-              </Content>
-            )}
-            <CButton onClick={() => submit()}>Confirm</CButton>
-          </Container>
-        </Card>
+      <Modal hideClose>
+        {({ addModal }) => {
+          addModal();
+          return (
+            <Card>
+              <Container>
+                <div>{controlData.message}</div>
+                {controlData.players && (
+                  <Content>
+                    {controlData.players.map((player) => (
+                      <CardWrapper key={player.id}>
+                        <MiniCard
+                          isSelectable={true}
+                          isActive={chancellorId === player.id}
+                          onClick={() => setChancellorId(player.id)}
+                        >
+                          {player.name}
+                        </MiniCard>
+                      </CardWrapper>
+                    ))}
+                  </Content>
+                )}
+                <CButton onClick={() => submit()}>Confirm</CButton>
+              </Container>
+            </Card>
+          );
+        }}
       </Modal>
     )
   );

@@ -29,14 +29,12 @@ const EndGameModal = ({ player }: { player: Player }) => {
 
   const submit = async () => {
     const response = await post(
-      `/api/conversations/${player.conversation_id}/players/${player.id}/confirm_role`,
+      `/api/conversations/${player.conversation_id}/players/${player.id}/end_game`,
       {}
     );
-    if (modalTriggerRef.current) {
-      modalTriggerRef.current.removeModal();
-    }
 
     setControlData({ loaded: false });
+    window.location.href = "/";
   };
 
   const handleActionData = (data: DataType) => {
@@ -56,39 +54,38 @@ const EndGameModal = ({ player }: { player: Player }) => {
     fetchActionData();
   }, []);
 
-  useEffect(() => {
-    if (controlData.loaded) {
-      modalTriggerRef.current.addModal();
-    }
-  }, [controlData]);
-
   return (
     controlData.loaded && (
-      <Modal ref={modalTriggerRef} hideClose>
-        <Card>
-          <Container>
-            <div>{controlData.message}</div>
-            {controlData.players && (
-              <Content>
-                {controlData.players.map((player) => (
-                  <CCard key={player.id}>
-                    <div>{player.name}</div>
-                    {player.secret_team_role === "liberal" && (
-                      <RedSpan>(Liberal)</RedSpan>
-                    )}
-                    {player.secret_team_role === "facist" && (
-                      <RedSpan>(Facist)</RedSpan>
-                    )}
-                    {player.secret_special_role === "hitler" && (
-                      <RedSpan>(Secret Hitler)</RedSpan>
-                    )}
-                  </CCard>
-                ))}
-              </Content>
-            )}
-            <CButton onClick={submit}>Confirm</CButton>
-          </Container>
-        </Card>
+      <Modal hideClose>
+        {({ addModal }) => {
+          addModal();
+          return (
+            <Card>
+              <Container>
+                <div>{controlData.message}</div>
+                {controlData.players && (
+                  <Content>
+                    {controlData.players.map((player) => (
+                      <CCard key={player.id}>
+                        <div>{player.name}</div>
+                        {player.secret_team_role === "liberal" && (
+                          <BlueSpan>(Liberal)</BlueSpan>
+                        )}
+                        {player.secret_team_role === "facist" && (
+                          <RedSpan>(Fascist)</RedSpan>
+                        )}
+                        {player.secret_special_role === "hitler" && (
+                          <RedSpan>(Secret Hitler)</RedSpan>
+                        )}
+                      </CCard>
+                    ))}
+                  </Content>
+                )}
+                <CButton onClick={submit}>Confirm</CButton>
+              </Container>
+            </Card>
+          );
+        }}
       </Modal>
     )
   );
@@ -103,6 +100,7 @@ const CCard = styled(Card)`
   ${CenteredContent}
   display: inline-flex;
   flex-direction: column;
+  margin-top: 20px;
 `;
 
 const RedSpan = styled.div`
@@ -116,7 +114,9 @@ const BlueSpan = styled.div`
 const Content = styled.div`
   padding: 20px 0 0;
   display: flex;
+  max-width: 800px;
   ${CenteredContent}
+  flex-wrap: wrap;
 `;
 
 const Container = styled.div`

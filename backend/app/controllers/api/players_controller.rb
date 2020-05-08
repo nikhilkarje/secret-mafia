@@ -118,6 +118,8 @@ class Api::PlayersController < Api::ConversationsController
       if chancellor && election
         chancellor.set_chancellor(election.id)
         @player.set_pending_action(:default)
+        election.chancellor_id = chancellor.id
+        election.save
         broadcast_room_message(conversation.id, "#{chancellor.name} is nominated for Chancellor. Voting will now begin.")
         GameWorkerJob.perform_now("start_voting", Api::ConversationSerializer.new(conversation).attributes)
         render json: {}, status: 200
@@ -181,7 +183,7 @@ class Api::PlayersController < Api::ConversationsController
         @election.election_status = "passed"
         save_all
         @player.set_pending_action(:default)
-        broadcast_room_message(@conversation.id, "Government has passed a #{policy == "0" ? "Liberal" : "Facist"} policy")
+        broadcast_room_message(@conversation.id, "Government has passed a #{policy == "0" ? "Liberal" : "Fascist"} policy")
         GameWorkerJob.perform_now("end_election", Api::ConversationSerializer.new(@conversation).attributes)
         render json: {}, status: 200
         return
@@ -210,7 +212,7 @@ class Api::PlayersController < Api::ConversationsController
     if @player && @player.check_pending_action(:confirm_veto)
       @conversation = @player.conversation
       @election = @conversation.elections.find_by(:election_status => "active")
-      if params[:confirm_veto] == "true"
+      if params[:confirm_veto] == "true" || params[:confirm_veto] == true
         broadcast_room_message(@conversation.id, "The government has vetoed the current session.")
         fail_election
         save_all
@@ -304,6 +306,19 @@ class Api::PlayersController < Api::ConversationsController
     render json: {}, status: 401
   end
 
+  def end_game
+    if @player
+      @conversation = @player.conversation
+      @player.destroy
+      if @conversation.players.length == 0
+        @conversation.destroy
+      end
+      render json: {}, status: 200
+      return
+    end
+    render json: {}, status: 401
+  end
+
   private
 
   def winning_message
@@ -314,7 +329,7 @@ class Api::PlayersController < Api::ConversationsController
       message = "Five Liberal policies are enacted. Liberals win."
       reveal_team
     elsif facist_policies >= 6
-      message = "Six Facist policies are enacted. Facists win."
+      message = "Six Fascist policies are enacted. Facists win."
     else
       if !@players
         @players = @conversation.players

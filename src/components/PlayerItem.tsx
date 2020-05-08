@@ -30,9 +30,8 @@ const PlayerItem = ({
   return (
     <>
       <CardWrapper>
-        <MiniCard>
-          {(player.status === "logged_out" ||
-            player.pending_action !== "default") && <Spinner />}
+        <MiniCard isDisabled={player.status === "dead"}>
+          {player.pending_action !== "none" && <Spinner />}
           {player.name}
         </MiniCard>
         {player.president_id && <PMiniCard>President</PMiniCard>}
@@ -78,6 +77,7 @@ const PlayerItem = ({
 
 const CardWrapper = styled.div`
   flex: 0 0 auto;
+  margin-top: 20px;
 `;
 
 const PMiniCard = styled(MiniCard)`

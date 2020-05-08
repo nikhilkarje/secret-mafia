@@ -1,7 +1,7 @@
 import styled, { css } from "styled-components";
 
 import { BoxShadow, CenteredContent } from "styles/common";
-import { White, LightGrey, Blue } from "styles/color";
+import { White, LightGrey, Blue, FadedRed } from "styles/color";
 
 const Card = styled.div`
   min-width: 320px;
@@ -13,6 +13,7 @@ const Card = styled.div`
 export const MiniCard = styled(Card)<{
   isActive?: boolean;
   isSelectable?: boolean;
+  isDisabled?: boolean;
 }>`
   min-width: 175px;
   font-size: 24px;
@@ -34,6 +35,12 @@ export const MiniCard = styled(Card)<{
     css`
       margin: 0 1px;
       border: 2px solid ${Blue};
+    `}
+
+  ${({ isDisabled }) =>
+    isDisabled &&
+    css`
+      background-color: ${FadedRed};
     `}
 `;
 

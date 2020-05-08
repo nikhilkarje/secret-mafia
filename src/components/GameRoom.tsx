@@ -8,7 +8,7 @@ import { Room } from "interfaces";
 import CableContext from "containers/CableContext";
 import Players from "components/Players";
 import { CenteredContent } from "styles/common";
-import { get } from "utils/request";
+import { media } from "utils/mediaQuery";
 
 const GameRoom = ({ room }: { room: Room }) => {
   const { cable } = useContext(CableContext);
@@ -34,14 +34,16 @@ const GameRoom = ({ room }: { room: Room }) => {
         <Players room={room} />
         {game && (
           <ContentContainer>
-            <LPile>
-              <div>Liberal Policy Enacted</div>
-              <div>{game.liberal_policy}</div>
-            </LPile>
-            <FPile>
-              <div>Facist Policy Enacted</div>
-              <div>{game.facist_policy}</div>
-            </FPile>
+            <PolicyPileContainer>
+              <LPile>
+                <div>Liberal Policy Enacted</div>
+                <div>{game.liberal_policy}</div>
+              </LPile>
+              <FPile>
+                <div>Fascist Policy Enacted</div>
+                <div>{game.facist_policy}</div>
+              </FPile>
+            </PolicyPileContainer>
             <PileContainer>
               <DrawPile>
                 <div>Policy Draw Pile</div>
@@ -60,19 +62,24 @@ const GameRoom = ({ room }: { room: Room }) => {
 };
 
 const CardCommonCss = css`
+  min-width: 300px;
   height: 400px;
   font-size: 24px;
   padding: 20px;
   position: relative;
   ${CenteredContent}
   display: inline-flex;
-  flex: 0 0 auto;
+
   flex-direction: column;
   color: ${White};
 
   & div:not(:first-child) {
     margin-top: 30px;
   }
+`;
+
+const PolicyPileContainer = styled.div`
+  flex: 0 0 auto;
 `;
 
 const LPile = styled(Card)`
@@ -87,11 +94,15 @@ const FPile = styled(Card)`
 `;
 
 const PileContainer = styled.div`
-  height: 400px;
-  margin-left: 30px;
+  margin-top: 30px;
   display: flex;
-  flex-direction: column;
   justify-content: space-between;
+
+  ${media.lg`
+    flex-direction: column;
+    margin-top: 0;
+    margin-left: 30px;
+  `}
 `;
 const DrawPile = styled(Card)`
   ${CardCommonCss}
@@ -102,13 +113,23 @@ const DrawPile = styled(Card)`
 const DiscardPile = styled(Card)`
   ${CardCommonCss}
   height: 190px;
+  margin-left: 30px;
   background-color: ${DarkGrey};
+  ${media.lg`
+    margin-left: 0;
+    margin-top: 20px;
+  `}
 `;
 
 const ContentContainer = styled.div`
   flex: 1 0 auto;
   padding: 20px 50px;
   ${CenteredContent}
+  flex-direction: column;
+
+  ${media.lg`
+    flex-direction: row;
+  `}
 `;
 
 const Container = styled.div`

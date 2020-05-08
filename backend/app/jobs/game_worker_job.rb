@@ -160,7 +160,7 @@ class GameWorkerJob < ApplicationJob
         broadcast_room_message(@payload[:id], "Five Liberal policies are enacted. Liberals win.")
         reveal_team
       elsif facist_policies >= 6
-        broadcast_room_message(@payload[:id], "Six Facist policies are enacted. Facists win.")
+        broadcast_room_message(@payload[:id], "Six Fascist policies are enacted. Facists win.")
         reveal_team
       elsif !check_executive_power
         start_election

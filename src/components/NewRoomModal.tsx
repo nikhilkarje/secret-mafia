@@ -1,28 +1,37 @@
-import React, { useState } from "react";
+import React, { useState, ReactNode } from "react";
 import styled from "styled-components";
 
 import Card from "components/common/Card";
 import TopHeader from "components/common/TopHeader";
 import Button from "components/common/Button";
 import WideInput from "components/common/WideInput";
-import Modal from "components/common/Modal";
+import Modal, { ModalChildProps } from "components/common/Modal";
 import { post } from "utils/request";
 
 const NewRoomForm = ({
-  modalControlRef,
+  removeModal,
   onSubmit,
 }: {
-  modalControlRef?: any;
+  removeModal: () => void;
   onSubmit?: () => void;
 }) => {
   const [title, setTitle] = useState<string>("");
+  const [totalPlayers, setTotalPlayers] = useState<number>(5);
   const [errorField, setErrorField] = useState<string>("");
+  const [totalErrorField, setTotalErrorField] = useState<string>("");
 
-  const handleFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (errorField) {
       setErrorField("");
     }
     setTitle(e.target.value);
+  };
+
+  const handleTotalChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (totalErrorField) {
+      setTotalErrorField("");
+    }
+    setTotalPlayers(+e.target.value);
   };
 
   const validate = () => {
@@ -31,6 +40,10 @@ const NewRoomForm = ({
       isError = true;
       setErrorField("Please enter room title");
     }
+    if (!totalPlayers || totalPlayers < 5 || totalPlayers > 10) {
+      isError = true;
+      setTotalErrorField("Please enter total players within 5 to 10");
+    }
     return isError;
   };
 
@@ -38,10 +51,11 @@ const NewRoomForm = ({
     if (validate()) {
       return;
     }
-    const response = await post("/api/conversations", { title });
-    if (modalControlRef.current) {
-      modalControlRef.current.removeModal();
-    }
+    const response = await post("/api/conversations", {
+      title,
+      total_players: totalPlayers,
+    });
+    removeModal();
     if (onSubmit) {
       onSubmit();
     }
@@ -57,7 +71,15 @@ const NewRoomForm = ({
           placeholder="Room Title"
           defaultValue={title}
           error={errorField}
-          onChange={handleFormChange}
+          onChange={handleTitleChange}
+        />
+        <WideInput
+          key="title"
+          type="number"
+          placeholder="Total Players"
+          defaultValue={totalPlayers}
+          error={totalErrorField}
+          onChange={handleTotalChange}
         />
         <CButton onClick={submit}>Submit</CButton>
       </Content>
@@ -66,16 +88,25 @@ const NewRoomForm = ({
 };
 
 const NewRoomModal = ({
-  modalControlRef,
+  children,
   onSubmit,
 }: {
-  modalControlRef: any;
+  children: (props: ModalChildProps) => ReactNode;
   onSubmit?: () => void;
 }) => {
+  const [modalProps, setModalProps] = useState<ModalChildProps | null>(null);
   return (
-    <Modal ref={modalControlRef}>
-      <NewRoomForm onSubmit={onSubmit} modalControlRef={modalControlRef} />
-    </Modal>
+    <>
+      {modalProps && children(modalProps)}
+      <Modal>
+        {(props) => {
+          if (!modalProps) setModalProps(props);
+          return (
+            <NewRoomForm onSubmit={onSubmit} removeModal={props.removeModal} />
+          );
+        }}
+      </Modal>
+    </>
   );
 };
 

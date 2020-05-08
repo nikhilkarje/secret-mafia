@@ -8,4 +8,13 @@ module ApplicationHelper
       user_id: session[:user_id],
     }
   end
+
+  def check_admin
+    if (!session[:user_id]) || Api::User.find(session[:user_id]).role != "admin"
+      respond_to do |format|
+        format.html { redirect_to root }
+        format.json { render json: { :status => 401 }, :status => 401 }
+      end
+    end
+  end
 end

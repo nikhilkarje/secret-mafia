@@ -16,6 +16,7 @@ Rails.application.routes.draw do
         post "/choose_president", to: "players#choose_president"
         post "/veto", to: "players#veto"
         post "/confirm_veto", to: "players#confirm_veto"
+        post "/end_game", to: "players#end_game"
       end
     end
     resources :messages, only: [:create]

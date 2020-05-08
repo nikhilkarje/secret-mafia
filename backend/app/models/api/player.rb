@@ -6,7 +6,7 @@ class Api::Player < ApplicationRecord
   belongs_to :president_election, :class_name => "Api::Election", :foreign_key => "president_id"
   belongs_to :chancellor_election, :class_name => "Api::Election", :foreign_key => "chancellor_id"
   has_many :votes, dependent: :destroy
-  scope :filter_by_active, -> { where status: self.status_option[:active] }
+  scope :filter_by_active, -> { where status: [self.status_option[:active], self.status_option[:investigated]] }
 
   def self.status_option
     { :active => "active", :dead => "dead", :investigated => "investigated" }
@@ -74,7 +74,7 @@ class Api::Player < ApplicationRecord
   def next_active
     player = Api::Player.where("conversation_id=? AND status=? AND id > ?", conversation_id, Api::Player.status_option[:active], id).first
     if !player
-      player = Api::Player.where(:conversation_id => conversation_id).first
+      player = Api::Player.where(:conversation_id => conversation_id, :status => Api::Player.status_option[:active]).first
     end
     player
   end
@@ -82,7 +82,7 @@ class Api::Player < ApplicationRecord
   def previous_active
     player = Api::Player.where("conversation_id=? AND status=? AND id < ?", conversation_id, Api::Player.status_option[:active], id).last
     if !player
-      player = Api::Player.where(:conversation_id => conversation_id).last
+      player = Api::Player.where(:conversation_id => conversation_id, :status => Api::Player.status_option[:active]).last
     end
     player
   end

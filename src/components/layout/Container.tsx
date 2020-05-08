@@ -18,6 +18,7 @@ export default function Container({
       <CContainer>
         <Header isLogin={isLogin} />
         <Content>{children}</Content>
+        <Footer />
       </CContainer>
     </>
   );
@@ -26,6 +27,7 @@ export default function Container({
 const CContainer = styled.div`
   display: flex;
   flex-direction: column;
+  min-width: 1080px;
 `;
 
 const Content = styled.div`

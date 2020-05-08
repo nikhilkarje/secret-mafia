@@ -1,6 +1,7 @@
 class ApplicationController < ActionController::Base
   include ApplicationHelper
   before_action :check_authenticated
+  before_action :check_admin, only: [:admin]
 
   def index
     bootstrap_javascript

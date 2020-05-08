@@ -53,6 +53,7 @@ const ErrorContainer = styled.span`
   font-size: 10px;
   position: absolute;
   bottom: 4px;
+  left: 0;
 `;
 
 export default WideInput;

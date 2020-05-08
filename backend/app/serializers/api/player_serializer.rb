@@ -1,5 +1,5 @@
 class Api::PlayerSerializer < ActiveModel::Serializer
-  attributes :id, :conversation_id, :name, :status, :pending_action, :user_id
+  attributes :id, :conversation_id, :name, :status, :pending_action, :user_id, :president_id, :chancellor_id
   attribute :secret_special_role, if: :should_show_secret_role
   attribute :secret_team_role, if: :should_show_team_role
 

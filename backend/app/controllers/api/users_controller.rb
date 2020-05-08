@@ -1,5 +1,7 @@
 class Api::UsersController < ApplicationController
+  include ApplicationHelper
   before_action :set_api_user, only: [:show, :edit, :update, :destroy]
+  before_action :check_admin
 
   # GET /api/users
   def index

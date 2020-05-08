@@ -30,9 +30,7 @@ const ExamineDeckModal = ({ player }: { player: Player }) => {
       `/api/conversations/${player.conversation_id}/players/${player.id}/confirm_deck`,
       {}
     );
-    if (modalTriggerRef.current) {
-      modalTriggerRef.current.removeModal();
-    }
+    setControlData({ loaded: false });
   };
 
   const handleActionData = (data: DataType) => {
@@ -56,30 +54,31 @@ const ExamineDeckModal = ({ player }: { player: Player }) => {
     fetchActionData();
   }, []);
 
-  useEffect(() => {
-    if (controlData.loaded) {
-      modalTriggerRef.current.addModal();
-    }
-  }, [controlData]);
-
   return (
     controlData.loaded && (
-      <Modal ref={modalTriggerRef} hideClose>
-        <Card>
-          <Container>
-            <div>{controlData.message}</div>
-            {controlData.policies && (
-              <Content>
-                {controlData.policies.map((policy, index) => (
-                  <CardWrapper key={index}>
-                    <MiniCard>{policy === "0" ? "Liberal" : "Facist"}</MiniCard>
-                  </CardWrapper>
-                ))}
-              </Content>
-            )}
-            <CButton onClick={() => submit()}>Confirm</CButton>
-          </Container>
-        </Card>
+      <Modal hideClose>
+        {({ addModal }) => {
+          addModal();
+          return (
+            <Card>
+              <Container>
+                <div>{controlData.message}</div>
+                {controlData.policies && (
+                  <Content>
+                    {controlData.policies.map((policy, index) => (
+                      <CardWrapper key={index}>
+                        <MiniCard>
+                          {policy === "0" ? "Liberal" : "Fascist"}
+                        </MiniCard>
+                      </CardWrapper>
+                    ))}
+                  </Content>
+                )}
+                <CButton onClick={() => submit()}>Confirm</CButton>
+              </Container>
+            </Card>
+          );
+        }}
       </Modal>
     )
   );

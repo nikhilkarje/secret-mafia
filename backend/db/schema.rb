@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_05_08_140237) do
+ActiveRecord::Schema.define(version: 2020_05_08_180046) do
 
   create_table "conversations", force: :cascade do |t|
     t.string "title"
@@ -31,6 +31,8 @@ ActiveRecord::Schema.define(version: 2020_05_08_140237) do
     t.datetime "updated_at", precision: 6, null: false
     t.string "policy_picked"
     t.integer "conversation_id", null: false
+    t.integer "president_id", default: 0, null: false
+    t.integer "chancellor_id"
     t.index ["conversation_id"], name: "index_elections_on_conversation_id"
   end
 

@@ -33,9 +33,7 @@ const BallotModal = ({ player }: { player: Player }) => {
       `/api/conversations/${player.conversation_id}/players/${player.id}/cast_vote`,
       { ballot: selected === 1 }
     );
-    if (modalTriggerRef.current) {
-      modalTriggerRef.current.removeModal();
-    }
+    setControlData({ loaded: false });
   };
 
   const handleActionData = (data: DataType) => {
@@ -58,41 +56,40 @@ const BallotModal = ({ player }: { player: Player }) => {
     fetchActionData();
   }, []);
 
-  useEffect(() => {
-    if (controlData.loaded) {
-      modalTriggerRef.current.addModal();
-    }
-  }, [controlData]);
-
   return (
     controlData.loaded && (
-      <Modal ref={modalTriggerRef} hideClose>
-        <Card>
-          <Container>
-            <div>{controlData.message}</div>
-            <Content>
-              <CardWrapper>
-                <MiniCard
-                  isSelectable={true}
-                  isActive={selected === 1}
-                  onClick={() => setSelected(1)}
-                >
-                  Ja
-                </MiniCard>
-              </CardWrapper>
-              <CardWrapper>
-                <MiniCard
-                  isSelectable={true}
-                  isActive={selected === 2}
-                  onClick={() => setSelected(2)}
-                >
-                  Nein
-                </MiniCard>
-              </CardWrapper>
-            </Content>
-            <CButton onClick={() => submit()}>Confirm</CButton>
-          </Container>
-        </Card>
+      <Modal hideClose>
+        {({ addModal }) => {
+          addModal();
+          return (
+            <Card>
+              <Container>
+                <div>{controlData.message}</div>
+                <Content>
+                  <CardWrapper>
+                    <MiniCard
+                      isSelectable={true}
+                      isActive={selected === 1}
+                      onClick={() => setSelected(1)}
+                    >
+                      Ja
+                    </MiniCard>
+                  </CardWrapper>
+                  <CardWrapper>
+                    <MiniCard
+                      isSelectable={true}
+                      isActive={selected === 2}
+                      onClick={() => setSelected(2)}
+                    >
+                      Nein
+                    </MiniCard>
+                  </CardWrapper>
+                </Content>
+                <CButton onClick={() => submit()}>Confirm</CButton>
+              </Container>
+            </Card>
+          );
+        }}
       </Modal>
     )
   );

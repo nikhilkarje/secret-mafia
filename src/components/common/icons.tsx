@@ -7,29 +7,26 @@ interface IconProps extends Props {
 
 interface Props extends React.HTMLAttributes<HTMLElement> {
   iconCss?: any;
+  onClick?: any;
 }
 
-const Icon = ({ icon, iconCss, className }: IconProps) => (
-  <CIcon className={`material-icons ${className}`} iconCss={iconCss}>
+const Icon = ({ icon, iconCss, className, onClick }: IconProps) => (
+  <CIcon
+    className={`material-icons ${className}`}
+    iconCss={iconCss}
+    onClick={onClick}
+  >
     {icon}
   </CIcon>
 );
 
-export const Add = ({ className, iconCss }: Props) => (
-  <Icon className={className} iconCss={iconCss} icon="add_circle" />
-);
+export const Add = (props: Props) => <Icon {...props} icon="add_circle" />;
 
-export const Edit = ({ className, iconCss }: Props) => (
-  <Icon className={className} iconCss={iconCss} icon="create" />
-);
+export const Edit = (props: Props) => <Icon {...props} icon="create" />;
 
-export const Close = ({ className, iconCss }: Props) => (
-  <Icon className={className} iconCss={iconCss} icon="clear" />
-);
+export const Close = (props: Props) => <Icon {...props} icon="clear" />;
 
-export const Delete = ({ className, iconCss }: Props) => (
-  <Icon className={className} iconCss={iconCss} icon="delete" />
-);
+export const Delete = (props: Props) => <Icon {...props} icon="delete" />;
 
 const CIcon = styled.i<{
   iconCss?: any;

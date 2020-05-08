@@ -17,7 +17,6 @@ import { get, post } from "utils/request";
 export default function RoomList() {
   const [rooms, setRooms] = useState<Room[] | null>(null);
   const roomsRef = useRef(null);
-  const modalControlRef = useRef(null);
 
   const fetchRooms = () => {
     get("/api/conversations")
@@ -45,13 +44,11 @@ export default function RoomList() {
     <CCard>
       <CTopHeader>
         Chat Rooms
-        <IconWrapper onClick={() => modalControlRef.current.addModal()}>
-          <Add />
-        </IconWrapper>
-        <NewRoomModal
-          onSubmit={fetchRooms}
-          modalControlRef={modalControlRef}
-        ></NewRoomModal>
+        <NewRoomModal onSubmit={fetchRooms}>
+          {(modalProps) => (
+            <Add iconCss={IconCss} onClick={() => modalProps.addModal()} />
+          )}
+        </NewRoomModal>
       </CTopHeader>
       <Table>
         <TableRow>
@@ -69,7 +66,6 @@ export default function RoomList() {
                 {room.players_joined}/{room.total_players}
               </TableData>
               <TableData>
-                {/* <Link href={`/room/${room.id}`}> Join</Link> */}
                 <Link onClick={() => joinRoom(room.id)}> Join</Link>
               </TableData>
             </TableRow>
@@ -92,7 +88,7 @@ const CCard = styled(Card)`
   min-width: 960px;
 `;
 
-const IconWrapper = styled.div`
+const IconCss = css`
   font-size: 30px;
   position: absolute;
   right: 40px;

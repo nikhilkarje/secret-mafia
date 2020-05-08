@@ -75,7 +75,8 @@ const Players = ({ room }: { room: Room }) => {
 const Container = styled.div`
   display: flex;
   justify-content: space-evenly;
-  padding: 20px 0;
+  padding: 0 0 20px;
+  flex-wrap: wrap;
 `;
 
 export default Players;

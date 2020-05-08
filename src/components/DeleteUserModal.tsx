@@ -1,47 +1,56 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, ReactNode } from "react";
 import styled from "styled-components";
 
 import Card from "components/common/Card";
 import TopHeader from "components/common/TopHeader";
 import { SecondaryButton } from "components/common/Button";
-import Modal from "components/common/Modal";
+import Modal, { ModalChildProps } from "components/common/Modal";
 import { UserListItem } from "interfaces";
 import { destroy } from "utils/request";
 import { FadedRed } from "styles/color";
 
 const DeleteUserModal = ({
-  modalControlRef,
+  children,
   onSubmit,
   user,
 }: {
-  modalControlRef: any;
+  children: (props: ModalChildProps) => ReactNode;
   onSubmit?: () => void;
   user: UserListItem;
 }) => {
   const { id, first_name, last_name } = user;
+  const [modalProps, setModalProps] = useState<ModalChildProps | null>(null);
 
-  const submit = async () => {
+  const submit = async (removeModal: () => void) => {
     const response = await destroy(`/api/users/${id}`);
     if (response.ok) {
       if (onSubmit) {
         onSubmit();
       }
-      if (modalControlRef.current) {
-        modalControlRef.current.removeModal();
-      }
+      removeModal();
     }
   };
 
   return (
-    <Modal ref={modalControlRef}>
-      <Card>
-        <TopHeader backGroundColor={FadedRed}>Remove User</TopHeader>
-        <Content>
-          Are you sure you want to delete {first_name} {last_name}?
-          <CButton onClick={submit}>Delete</CButton>
-        </Content>
-      </Card>
-    </Modal>
+    <>
+      {modalProps && children(modalProps)}
+      <Modal>
+        {(props) => {
+          if (!modalProps) setModalProps(props);
+          return (
+            <Card>
+              <TopHeader backGroundColor={FadedRed}>Remove User</TopHeader>
+              <Content>
+                Are you sure you want to delete {first_name} {last_name}?
+                <CButton onClick={() => submit(props.removeModal)}>
+                  Delete
+                </CButton>
+              </Content>
+            </Card>
+          );
+        }}
+      </Modal>
+    </>
   );
 };
 

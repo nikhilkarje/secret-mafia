@@ -30,9 +30,7 @@ const ConfirmVetoModal = ({ player }: { player: Player }) => {
       `/api/conversations/${player.conversation_id}/players/${player.id}/confirm_veto`,
       { confirm_veto }
     );
-    if (modalTriggerRef.current) {
-      modalTriggerRef.current.removeModal();
-    }
+    setControlData({ loaded: false });
   };
 
   const handleActionData = (data: DataType) => {
@@ -57,31 +55,34 @@ const ConfirmVetoModal = ({ player }: { player: Player }) => {
     fetchActionData();
   }, []);
 
-  useEffect(() => {
-    if (controlData.loaded) {
-      modalTriggerRef.current.addModal();
-    }
-  }, [controlData]);
-
   return (
     controlData.loaded && (
-      <Modal ref={modalTriggerRef} hideClose>
-        <Card>
-          <Container>
-            <div>{controlData.message}</div>
-            {controlData.policies && (
-              <Content>
-                {controlData.policies.map((policy, index) => (
-                  <CardWrapper key={index}>
-                    <MiniCard>{policy === "0" ? "Liberal" : "Facist"}</MiniCard>
-                  </CardWrapper>
-                ))}
-              </Content>
-            )}
-            <CButton onClick={() => submit(true)}>Confirm</CButton>
-            <RButton onClick={() => submit(false)}>Deny</RButton>
-          </Container>
-        </Card>
+      <Modal hideClose>
+        {({ addModal }) => {
+          addModal();
+          return (
+            <Card>
+              <Container>
+                <div>{controlData.message}</div>
+                {controlData.policies && (
+                  <Content>
+                    {controlData.policies.map((policy, index) => (
+                      <CardWrapper key={index}>
+                        <MiniCard>
+                          {policy === "0" ? "Liberal" : "Fascist"}
+                        </MiniCard>
+                      </CardWrapper>
+                    ))}
+                  </Content>
+                )}
+                <CtaWrapper>
+                  <CButton onClick={() => submit(true)}>Confirm</CButton>
+                  <RButton onClick={() => submit(false)}>Deny</RButton>
+                </CtaWrapper>
+              </Container>
+            </Card>
+          );
+        }}
       </Modal>
     )
   );
@@ -105,11 +106,15 @@ const Container = styled.div`
 `;
 
 const CButton = styled(Button)`
-  margin-top: 20px;
+  margin: 20px 0 0;
 `;
 
 const RButton = styled(PrimaryButton)`
-  margin-top: 20px;
+  margin: 20px 0 0 10px;
+`;
+
+const CtaWrapper = styled.div`
+  ${CenteredContent}
 `;
 
 export default ConfirmVetoModal;

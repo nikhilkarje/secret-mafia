@@ -1,22 +1,22 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, ReactNode } from "react";
 import styled from "styled-components";
 
 import Card from "components/common/Card";
 import TopHeader from "components/common/TopHeader";
 import Button from "components/common/Button";
 import WideInput from "components/common/WideInput";
-import Modal from "components/common/Modal";
+import Modal, { ModalChildProps } from "components/common/Modal";
 import { UserListItem, EditUserForm, EditUserFormIndex } from "interfaces";
 import { put } from "utils/request";
 
 const EditUserForm = ({
   user,
   onSubmit,
-  modalControlRef,
+  removeModal,
 }: {
   user: UserListItem;
   onSubmit?: () => void;
-  modalControlRef: any;
+  removeModal: () => void;
 }) => {
   const defaultValues = {
     first_name: "",
@@ -64,9 +64,7 @@ const EditUserForm = ({
       if (onSubmit) {
         onSubmit();
       }
-      if (modalControlRef.current) {
-        modalControlRef.current.removeModal();
-      }
+      removeModal();
     }
   };
 
@@ -107,20 +105,29 @@ const EditUserForm = ({
 const EditUserModal = ({
   onSubmit,
   user,
-  modalControlRef,
+  children,
 }: {
   onSubmit?: () => void;
   user: UserListItem;
-  modalControlRef: any;
+  children: (props: ModalChildProps) => ReactNode;
 }) => {
+  const [modalProps, setModalProps] = useState<ModalChildProps | null>(null);
   return (
-    <Modal ref={modalControlRef}>
-      <EditUserForm
-        user={user}
-        modalControlRef={modalControlRef}
-        onSubmit={onSubmit}
-      />
-    </Modal>
+    <>
+      {modalProps && children(modalProps)}
+      <Modal>
+        {(props) => {
+          if (!modalProps) setModalProps(props);
+          return (
+            <EditUserForm
+              user={user}
+              removeModal={props.removeModal}
+              onSubmit={onSubmit}
+            />
+          );
+        }}
+      </Modal>
+    </>
   );
 };
 

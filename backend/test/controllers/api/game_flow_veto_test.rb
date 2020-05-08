@@ -7,7 +7,7 @@ def reload_all
   @player.reload
 end
 
-class Api::GameFlowWinTest < ActionDispatch::IntegrationTest
+class Api::GameFlowVetoTest < ActionDispatch::IntegrationTest
   setup do
     @api_user = api_users(:user2)
     sign_in_as(@api_user)

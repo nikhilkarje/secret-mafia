@@ -60,6 +60,10 @@ class Api::PlayersController < Api::ConversationsController
         current_election = @player.conversation.elections.find_by(:election_status => "active")
         render json: { :type => "chancellors_choice", :data => current_election.policy_picked }
         return
+      when Api::Player.action_option[:confirm_veto]
+        current_election = @player.conversation.elections.find_by(:election_status => "active")
+        render json: { :type => "confirm_veto", :data => current_election.policy_picked }
+        return
       when Api::Player.action_option[:kill]
         render json: { :type => "kill", :data => other_players }
         return
@@ -191,10 +195,12 @@ class Api::PlayersController < Api::ConversationsController
       @conversation = @player.conversation
       @election = @conversation.elections.find_by(:election_status => "active")
       facist_policies = @conversation.policy_passed.count("1")
-      if @player.id == @election.chancellor_id && facist_policies == 5
+      if facist_policies == 5
+        broadcast_room_message(@conversation.id, "The chancellor proposes to veto the current session.")
         @player.set_pending_action(:default)
         @election.president.set_pending_action(:confirm_veto)
         render json: {}, status: 200
+        return
       end
     end
     render json: {}, status: 401
@@ -204,13 +210,19 @@ class Api::PlayersController < Api::ConversationsController
     if @player && @player.check_pending_action(:confirm_veto)
       @conversation = @player.conversation
       @election = @conversation.elections.find_by(:election_status => "active")
-      if @player.id == @election.president_id
-        broadcast_room_message(@conversation.id, "The government has vetoed the current session")
+      if params[:confirm_veto] == "true"
+        broadcast_room_message(@conversation.id, "The government has vetoed the current session.")
         fail_election
         save_all
         @player.set_pending_action(:default)
-        render json: {}, status: 200
+        GameWorkerJob.perform_now("start_election", Api::ConversationSerializer.new(@conversation).attributes)
+      else
+        broadcast_room_message(@conversation.id, "The president has denied the proposed veto. Chancellor must choose.")
+        @player.set_pending_action(:default)
+        @election.chancellor.set_pending_action(:policy_draw_chancellor_forced)
       end
+      render json: {}, status: 200
+      return
     end
     render json: {}, status: 401
   end

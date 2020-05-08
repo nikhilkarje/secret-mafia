@@ -10,3 +10,10 @@ failed_vote<%= n+1 %>:
   player: failed_player<%= n+1 %>
   election: failed
 <% end %>
+
+<% 4.times do |n| %>
+chancellor_vote<%= n+1 %>:
+  ballot: true
+  player: chancellor_player<%= n+1 %>
+  election: chancellor
+<% end %>

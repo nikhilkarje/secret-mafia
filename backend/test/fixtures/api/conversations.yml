@@ -45,3 +45,15 @@ examine_player:
   total_players: 7
   players_joined: 7
   policy_passed: "00001"
+
+chancellor:
+  title: "Test Room"
+  policy_order: "111111100"
+  players_joined: 5
+  policy_passed: "000111"
+
+veto:
+  title: "Test Room"
+  policy_order: "111111000"
+  players_joined: 5
+  policy_passed: "011111"

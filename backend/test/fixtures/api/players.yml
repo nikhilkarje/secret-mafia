@@ -67,6 +67,18 @@ deck_player<%= n+1 %>:
   pending_action: <%= n == 1 ? "policy_draw_chancellor" : "none" %>
 <% end %>
 
+<% 5.times do |n| %>
+chancellor_player<%= n+1 %>:
+  name: <%="Chancellor Player#{n+1}"%>
+  secret_team_role: <%= n > 2 ? "facist" : "liberal" %>
+  secret_special_role: <%= n == 4 ? "hitler" : nil %>
+  conversation: chancellor
+  user: user<%= n+1 %>
+  president_id: <%= n == 0 ? ActiveRecord::FixtureSet.identify(:chancellor) : nil%>
+  chancellor_id: <%= n == 4 ? ActiveRecord::FixtureSet.identify(:chancellor) : nil%>
+  pending_action: <%= n == 4 ? "vote" : "none" %>
+<% end %>
+
 <% 7.times do |n| %>
 examine_player<%= n+1 %>:
   name: <%="Examine Player#{n+1}"%>
@@ -76,5 +88,17 @@ examine_player<%= n+1 %>:
   user: user<%= n+1 %>
   president_id: <%= n == 0 ? ActiveRecord::FixtureSet.identify(:examine_player) : nil%>
   chancellor_id: <%= n == 1 ? ActiveRecord::FixtureSet.identify(:examine_player) : nil%>
+  pending_action: <%= n == 1 ? "policy_draw_chancellor" : "none" %>
+<% end %>
+
+<% 5.times do |n| %>
+veto_player<%= n+1 %>:
+  name: <%="Veto Player#{n+1}"%>
+  secret_team_role: <%= n > 2 ? "facist" : "liberal" %>
+  secret_special_role: <%= n == 4 ? "hitler" : nil %>
+  conversation: veto
+  user: user<%= n+1 %>
+  president_id: <%= n == 0 ? ActiveRecord::FixtureSet.identify(:veto) : nil%>
+  chancellor_id: <%= n == 1 ? ActiveRecord::FixtureSet.identify(:veto) : nil%>
   pending_action: <%= n == 1 ? "policy_draw_chancellor" : "none" %>
 <% end %>

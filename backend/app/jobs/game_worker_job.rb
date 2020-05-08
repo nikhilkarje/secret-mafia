@@ -78,9 +78,9 @@ class GameWorkerJob < ApplicationJob
 
   def hitler_as_chancellor?
     facist_policies = @conversation.policy_passed.count("1")
-    if facist_policies > 3
+    if facist_policies >= 3
       secret_hitler = @players.find_by(:secret_special_role => "hitler")
-      if @election.chancellor_id == secret_hitler.id
+      if secret_hitler.chancellor_id
         broadcast_room_message(@payload[:id], "Secret Hitler has been voted as Chancellor. Facists win.")
         reveal_team
         return true

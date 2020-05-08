@@ -14,6 +14,8 @@ Rails.application.routes.draw do
         post "/examine_player", to: "players#examine_player"
         post "/confirm_investigation", to: "players#confirm_investigation"
         post "/choose_president", to: "players#choose_president"
+        post "/veto", to: "players#veto"
+        post "/confirm_veto", to: "players#confirm_veto"
       end
     end
     resources :messages, only: [:create]

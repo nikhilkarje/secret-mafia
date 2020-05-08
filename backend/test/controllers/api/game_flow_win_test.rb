@@ -1,7 +1,7 @@
 require "test_helper"
 include Api::ConversationsHelper
 
-class Api::GameFlowLiberalTest < ActionDispatch::IntegrationTest
+class Api::GameFlowWinTest < ActionDispatch::IntegrationTest
   setup do
     @api_user = api_users(:user2)
     sign_in_as(@api_user)

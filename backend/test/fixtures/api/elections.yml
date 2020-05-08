@@ -24,3 +24,11 @@ examine_player:
   conversation: examine_player
   policy_draw: "111"
   policy_picked: "11"
+
+chancellor:
+  conversation: chancellor
+
+veto:
+  conversation: veto
+  policy_draw: "011"
+  policy_picked: "01"

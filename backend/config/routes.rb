@@ -23,6 +23,7 @@ Rails.application.routes.draw do
   end
   mount ActionCable.server => "/cable"
   get "/login", to: "sessions#new"
+  get "/create", to: "sessions#new"
   post "/login", to: "sessions#create"
   get "/logout", to: "sessions#destroy"
   get "/admin", to: "application#admin"

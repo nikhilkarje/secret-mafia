@@ -6,6 +6,7 @@ import TopHeader from "components/common/TopHeader";
 import Button from "components/common/Button";
 import WideInput from "components/common/WideInput";
 import { post } from "utils/request";
+import { Purple } from "styles/color";
 
 export default function LoginCard() {
   const emailRef = useRef<HTMLInputElement>();
@@ -40,10 +41,19 @@ export default function LoginCard() {
           placeholder="Password"
         />
         <CButton onClick={login}>Submit</CButton>
+        <Link href="/create">New User?</Link>
       </Content>
     </Card>
   );
 }
+
+const Link = styled.a`
+  display: block;
+  margin-top: 15px;
+  text-align: center;
+  cursor: pointer;
+  color: ${Purple};
+`;
 
 const Content = styled.div`
   padding: 50px;

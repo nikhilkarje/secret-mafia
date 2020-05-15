@@ -8,7 +8,7 @@ import { DarkGrey, LightGrey, Purple } from "styles/color";
 export default function Header({ isLogin }: { isLogin?: boolean }) {
   return (
     <CHeader isLogin={isLogin}>
-      <Logo>Rails React Scaffold</Logo>
+      <Logo>Secret Hitler</Logo>
       {!isLogin && <Link href="/logout">Log out</Link>}
     </CHeader>
   );

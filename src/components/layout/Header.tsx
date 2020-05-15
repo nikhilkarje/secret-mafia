@@ -5,11 +5,22 @@ import { HEADER_HEIGHT } from "constants/style";
 import { BoxShadowBottom } from "styles/common";
 import { DarkGrey, LightGrey, Purple } from "styles/color";
 
-export default function Header({ isLogin }: { isLogin?: boolean }) {
+export default function Header({
+  isLogin,
+  roomId,
+}: {
+  isLogin?: boolean;
+  roomId?: number;
+}) {
+  console.log(roomId);
   return (
     <CHeader isLogin={isLogin}>
       <Logo>Secret Hitler</Logo>
-      {!isLogin && <Link href="/logout">Log out</Link>}
+      {roomId ? (
+        <Link href="/leave_game">Leave Game</Link>
+      ) : !isLogin ? (
+        <Link href="/logout">Log out</Link>
+      ) : null}
     </CHeader>
   );
 }

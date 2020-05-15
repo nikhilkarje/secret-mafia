@@ -28,13 +28,8 @@ const EndGameModal = ({ player }: { player: Player }) => {
   });
 
   const submit = async () => {
-    const response = await post(
-      `/api/conversations/${player.conversation_id}/players/${player.id}/end_game`,
-      {}
-    );
-
     setControlData({ loaded: false });
-    window.location.href = "/";
+    window.location.href = "/leave_game";
   };
 
   const handleActionData = (data: DataType) => {

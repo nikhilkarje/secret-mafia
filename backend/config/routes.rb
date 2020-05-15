@@ -26,6 +26,7 @@ Rails.application.routes.draw do
   get "/create", to: "sessions#new"
   post "/login", to: "sessions#create"
   get "/logout", to: "sessions#destroy"
+  get "/leave_game", to: "application#leave_game"
   get "/admin", to: "application#admin"
   get "/room/:room_id", to: "application#room"
   get "/trigger", to: "application#test"

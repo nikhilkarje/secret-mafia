@@ -8,15 +8,17 @@ import { EggShellWhite } from "styles/color";
 
 export default function Container({
   isLogin,
+  roomId,
   children,
 }: {
+  roomId?: number;
   isLogin?: boolean;
   children: React.ReactNode;
 }) {
   return (
     <>
       <CContainer>
-        <Header isLogin={isLogin} />
+        <Header roomId={roomId} isLogin={isLogin} />
         <Content>{children}</Content>
         <Footer />
       </CContainer>

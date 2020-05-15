@@ -9,22 +9,27 @@ import { CenteredContent } from "styles/common";
 
 export default function App() {
   return (
-    <Container>
-      <Router>
-        <Switch>
-          <Route path="/room/:roomId">
-            <ChatRoom />
-          </Route>
-          <Route path="/">
+    <Router>
+      <Switch>
+        <Route
+          path="/room/:roomId"
+          render={(props) => (
+            <Container roomId={props.match.params.roomId}>
+              <ChatRoom />
+            </Container>
+          )}
+        />
+        <Route path="/">
+          <Container>
             <Wrapper>
               <Content>
                 <RoomList />
               </Content>
             </Wrapper>
-          </Route>
-        </Switch>
-      </Router>
-    </Container>
+          </Container>
+        </Route>
+      </Switch>
+    </Router>
   );
 }
 

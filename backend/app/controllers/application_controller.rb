@@ -41,4 +41,16 @@ class ApplicationController < ActionController::Base
       end
     end
   end
+
+  def leave_game
+    @player = Api::Player.find_by(:user_id => session[:user_id])
+    if @player
+      @conversation = @player.conversation
+      @player.destroy
+      if @conversation.players.length == 0
+        @conversation.destroy
+      end
+    end
+    redirect_to root_path
+  end
 end

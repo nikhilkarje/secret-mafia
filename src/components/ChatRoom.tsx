@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useToasts } from "react-toast-notifications";
-import styled, { css } from "styled-components";
+import styled, { css, keyframes } from "styled-components";
 
 import Card from "components/common/Card";
 import ChatBox from "components/ChatBox";
@@ -14,14 +14,18 @@ import {
   Skobeloff,
   Charcoal,
   ChampagnePink,
+  Seashell,
 } from "styles/color";
 import { get } from "utils/request";
 import { Room, Message } from "interfaces";
 import Footer from "components/layout/Footer";
+import { DoubleArrow } from "components/common/icons";
+import { HEADER_HEIGHT } from "constants/style";
 
 export default function ChatRoom() {
   const { roomId } = useParams();
   const [messages, setMessages] = useState<Message[]>([]);
+  const [collapseChat, setCollapseChat] = useState(false);
   const [room, setRoom] = useState<Room | null>(null);
   const contentRef = useRef(null);
   const messagesRef = useRef<Message[]>(messages);
@@ -77,10 +81,16 @@ export default function ChatRoom() {
       {room && messages && (
         <>
           <GameContainer>
+            <IconWrapper collapseChat={collapseChat}>
+              <DoubleArrow
+                onClick={() => setCollapseChat(!collapseChat)}
+                iconCss={ArrowCss}
+              />
+            </IconWrapper>
             <GameRoom room={room} />
             {/* <CFooter /> */}
           </GameContainer>
-          <CCard>
+          <CCard collapseChat={collapseChat}>
             <Content ref={contentRef}>
               {messages.map((message) => (
                 <ChatWrapper key={message.id}>
@@ -103,6 +113,25 @@ export default function ChatRoom() {
   );
 }
 
+const ArrowCss = css`
+  color: ${Seashell};
+`;
+
+const IconWrapper = styled.div<{
+  collapseChat: boolean;
+}>`
+  display: inline-block;
+  position: absolute;
+  right: 15px;
+  top: 17px;
+
+  ${({ collapseChat }) =>
+    collapseChat &&
+    css`
+      transform: rotate(180deg);
+    `}
+`;
+
 const Container = styled.div`
   display: flex;
   height: 100%;
@@ -113,19 +142,31 @@ const GameContainer = styled.div`
   display: flex;
   flex-direction: column;
   width: calc(100% - 320px);
+  position: relative;
 `;
 
 const CFooter = styled(Footer)`
   flex: 0 0 auto;
 `;
 
-const CCard = styled(Card)`
-  flex: 0 0 320px;
+const CCard = styled(Card)<{
+  collapseChat: boolean;
+}>`
+  flex: 0 0 auto;
+  width: 320px;
   height: 100%;
   display: flex;
   flex-direction: column;
   border-left: 1px solid ${LightGrey};
   background-color: ${ChampagnePink};
+  transition: all 0.5s;
+
+  ${({ collapseChat }) =>
+    collapseChat &&
+    css`
+      width: 0;
+      min-width: 0;
+    `}
 `;
 
 const Content = styled.div`

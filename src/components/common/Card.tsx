@@ -36,12 +36,6 @@ export const MiniCard = styled(Card)<{
       margin: 0 1px;
       border: 2px solid ${Blue};
     `}
-
-  ${({ isDisabled }) =>
-    isDisabled &&
-    css`
-      background-color: ${FadedRed};
-    `}
 `;
 
 export default Card;

@@ -28,6 +28,10 @@ export const Close = (props: Props) => <Icon {...props} icon="clear" />;
 
 export const Delete = (props: Props) => <Icon {...props} icon="delete" />;
 
+export const DoubleArrow = (props: Props) => (
+  <Icon {...props} icon="double_arrow" />
+);
+
 const CIcon = styled.i<{
   iconCss?: any;
 }>`

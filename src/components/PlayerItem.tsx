@@ -1,29 +1,26 @@
-import React, { useContext, useState, useEffect, useRef } from "react";
-import styled from "styled-components";
-import { CenteredContent, OverlayCss } from "styles/common";
+import React, { useContext } from "react";
+import styled, { css } from "styled-components";
 
-import { MiniCard } from "components/common/Card";
-import { Player } from "interfaces";
-import CableContext from "containers/CableContext";
-import {
-  Blue,
-  LightGrey,
-  Terracotta,
-  Seashell,
-  Crayola,
-  Charcoal,
-  SandyBrown,
-} from "styles/color";
-import ConfigContext from "containers/ConfigContext";
-import RoleConfirmModal from "components/RoleConfirmModal";
-import ChancellorConfirmModal from "components/ChancellorConfirmModal";
 import BallotModal from "components/BallotModal";
-import PresidentialPolicyModal from "components/PresidentialPolicyModal";
+import ChancellorConfirmModal from "components/ChancellorConfirmModal";
 import ChancellorPolicyModal from "components/ChancellorPolicyModal";
-import ExamineDeckModal from "components/ExamineDeckModal";
-import ExecutePlayerModal from "components/ExecutePlayerModal";
+import { MiniCard } from "components/common/Card";
 import ConfirmVetoModal from "components/ConfirmVetoModal";
 import EndGameModal from "components/EndGameModal";
+import ExamineDeckModal from "components/ExamineDeckModal";
+import ExecutePlayerModal from "components/ExecutePlayerModal";
+import PresidentialPolicyModal from "components/PresidentialPolicyModal";
+import RoleConfirmModal from "components/RoleConfirmModal";
+import ConfigContext from "containers/ConfigContext";
+import { Player } from "interfaces";
+import {
+  Charcoal,
+  Crayola,
+  DarkSeaGreen,
+  FadedRed,
+  Seashell,
+} from "styles/color";
+import { CenteredContent, OverlayCss } from "styles/common";
 
 const PlayerItem = ({
   player,
@@ -39,7 +36,16 @@ const PlayerItem = ({
     <>
       <CardWrapper>
         <PlayerCard isDisabled={player.status === "dead"}>
-          {player.pending_action !== "none" && <Spinner />}
+          {player.pending_action !== "none" && (
+            <SpinnerWrapper>
+              <Spinner>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+              </Spinner>
+            </SpinnerWrapper>
+          )}
           {player.name}
         </PlayerCard>
         {player.president_id && <PMiniCard>President</PMiniCard>}
@@ -88,41 +94,86 @@ const CardWrapper = styled.div`
   margin-top: 20px;
 `;
 
-const PlayerCard = styled(MiniCard)`
-  background-color: ${SandyBrown};
+const PlayerCard = styled(MiniCard)<{
+  isDisabled: boolean;
+}>`
+  background-color: ${Crayola};
   color: ${Charcoal};
+  ${({ isDisabled }) =>
+    isDisabled &&
+    css`
+      background-color: ${FadedRed};
+    `}
 `;
 
 const PMiniCard = styled(MiniCard)`
   padding: 10px;
   font-size: 18px;
   margin-top: 5px;
-  background-color: ${Terracotta};
+  background-color: ${DarkSeaGreen};
   color: ${Seashell};
 `;
 
 const Spinner = styled.div`
-  ${OverlayCss}
-  ${CenteredContent}
+  display: inline-block;
+  position: relative;
+  width: 80px;
+  height: 80px;
 
-  &:before {
-    content: "";
-    border: 5px solid ${LightGrey};
-    border-top: 5px solid ${Blue};
+  & div {
+    position: absolute;
+    top: 33px;
+    width: 13px;
+    height: 13px;
     border-radius: 50%;
-    width: 20px;
-    height: 20px;
-    animation: spin 1s linear infinite;
-
-    @keyframes spin {
-      0% {
-        transform: rotate(0deg);
-      }
-      100% {
-        transform: rotate(360deg);
-      }
+    background: ${Seashell};
+    animation-timing-function: cubic-bezier(0, 1, 1, 0);
+  }
+  & div:nth-child(1) {
+    left: 8px;
+    animation: lds-ellipsis1 0.6s infinite;
+  }
+  & div:nth-child(2) {
+    left: 8px;
+    animation: lds-ellipsis2 0.6s infinite;
+  }
+  & div:nth-child(3) {
+    left: 32px;
+    animation: lds-ellipsis2 0.6s infinite;
+  }
+  & div:nth-child(4) {
+    left: 56px;
+    animation: lds-ellipsis3 0.6s infinite;
+  }
+  @keyframes lds-ellipsis1 {
+    0% {
+      transform: scale(0);
+    }
+    100% {
+      transform: scale(1);
     }
   }
+  @keyframes lds-ellipsis3 {
+    0% {
+      transform: scale(1);
+    }
+    100% {
+      transform: scale(0);
+    }
+  }
+  @keyframes lds-ellipsis2 {
+    0% {
+      transform: translate(0, 0);
+    }
+    100% {
+      transform: translate(24px, 0);
+    }
+  }
+`;
+
+const SpinnerWrapper = styled.div`
+  ${OverlayCss}
+  ${CenteredContent}
 `;
 
 export default PlayerItem;

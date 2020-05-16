@@ -7,6 +7,8 @@ export const PersianGreen = "#2A9D8F";
 export const ChampagnePink = "#F9E5D8";
 export const Crayola = "#EDCF74";
 export const SandyBrown = "#F4A261";
+export const Melon = "#E8A598";
+export const DarkSeaGreen = "#8CB682";
 
 export const Blue = "#3498db";
 export const BrightRed = "#ff0000";

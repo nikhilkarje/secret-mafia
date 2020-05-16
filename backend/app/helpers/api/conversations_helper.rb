@@ -71,12 +71,12 @@ module Api::ConversationsHelper
         message += "#{player.name} "
       end
     end
-    broadcast_room_message(@conversation.id, message)
+    broadcast_room_message(@conversation.id, message, "default")
     message = "Team Liberal: "
     liberal_players.each do |player|
       message += "#{player.name} "
     end
-    broadcast_room_message(@conversation.id, message)
+    broadcast_room_message(@conversation.id, message, "default")
   end
 
   def nominate_president(player)
@@ -90,7 +90,7 @@ module Api::ConversationsHelper
       @conversation.election_tracker = 0
       @conversation.policy_passed += @conversation.policy_order[0]
       @conversation.policy_order = @conversation.policy_order[1..-1]
-      broadcast_room_message(@conversation.id, "Three elections failed in a row. Frustrated populace enacted a #{@conversation.policy_passed == "0" ? "Liberal" : "Fascist"} policy")
+      broadcast_room_message(@conversation.id, "Three elections failed in a row. Frustrated populace enacted a #{@conversation.policy_passed.last == "0" ? "Liberal" : "Fascist"} policy", "#{@conversation.policy_passed.last == "0" ? "success" : "error"}")
     end
   end
 

@@ -42,12 +42,12 @@ const RoleConfirmModal = ({ player }: { player: Player }) => {
       if (player.id !== facist.id) {
         players.push(facist);
       } else if (facist.secret_special_role === "hitler") {
-        message = "You are the Secret Hitler of the facist party.";
+        message = "You are the Secret Hitler of the Fascist party.";
       }
     }
     if (!message) {
       message =
-        "You are a member of the facist party. Make note of the Secret Hitler.";
+        "You are a member of the Fascist party. Make note of the Secret Hitler.";
     }
     message += " These are your teammates.";
     setControlData({ loaded: true, message, players });
@@ -59,7 +59,12 @@ const RoleConfirmModal = ({ player }: { player: Player }) => {
     } else if (data.type === "liberal_conferrence") {
       setControlData({
         loaded: true,
-        message: "You are a member of the liberal party.",
+        message: "You are a member of the Liberal party.",
+      });
+    } else if (data.type === "hitler_conferrence") {
+      setControlData({
+        loaded: true,
+        message: "You are the Secret Hitler of the Fascist party.",
       });
     }
   };

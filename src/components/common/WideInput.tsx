@@ -1,7 +1,7 @@
 import React, { useImperativeHandle, useRef } from "react";
 import styled, { css } from "styled-components";
 
-import { Black, BrightRed, LightGrey, White } from "styles/color";
+import { Charcoal, BrightRed, LightGrey, Seashell } from "styles/color";
 
 const WideInput = ({ forwardRef, error, ...props }: any) => {
   const inputRef = useRef(null);
@@ -35,10 +35,10 @@ const Input = styled.input<{
   border-radius: 5px;
   line-height: 16px;
   border: 1px solid ${LightGrey};
-  background: ${White};
+  background: ${Seashell};
   height: 38px;
   box-sizing: border-box;
-  color: ${Black};
+  color: ${Charcoal};
   box-shadow: 0 2px 0 0 rgba(0, 0, 0, 0.08) inset;
 
   ${({ isError }) =>

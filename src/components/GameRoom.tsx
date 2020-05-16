@@ -1,6 +1,6 @@
 import React, { useContext, useState, useEffect, useRef } from "react";
 import styled, { css } from "styled-components";
-import { White, Blue, DarkGrey, FadedRed } from "styles/color";
+import { Seashell, Blue, DarkGrey, FadedRed } from "styles/color";
 
 import TopHeader from "components/common/TopHeader";
 import Card from "components/common/Card";
@@ -71,7 +71,7 @@ const CardCommonCss = css`
   display: inline-flex;
 
   flex-direction: column;
-  color: ${White};
+  color: ${Seashell};
 
   & div:not(:first-child) {
     margin-top: 30px;
@@ -134,7 +134,7 @@ const ContentContainer = styled.div`
 
 const Container = styled.div`
   height: 100%;
-  background-color: ${White};
+  background-color: ${Seashell};
   display: flex;
   flex-direction: column;
   overflow: auto;

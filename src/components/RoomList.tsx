@@ -11,7 +11,7 @@ import Table, {
   TableRow,
   TableData,
 } from "components/common/Table";
-import { Purple } from "styles/color";
+import { Terracotta } from "styles/color";
 import { get, post } from "utils/request";
 
 export default function RoomList() {
@@ -77,7 +77,7 @@ export default function RoomList() {
 
 const Link = styled.span`
   cursor: pointer;
-  color: ${Purple};
+  color: ${Terracotta};
 `;
 
 const CTopHeader = styled(TopHeader)`

@@ -2,7 +2,7 @@ import React, { useState, ReactNode } from "react";
 import styled, { css } from "styled-components";
 
 import { CenteredContent } from "styles/common";
-import { White } from "styles/color";
+import { Seashell } from "styles/color";
 import { Close } from "components/common/icons";
 
 export interface ModalChildProps {
@@ -132,7 +132,7 @@ const CloseWrapper = styled.span`
 `;
 
 const CloseIconCss = css`
-  color: ${White};
+  color: ${Seashell};
 `;
 
 export default Modal;

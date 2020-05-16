@@ -1,12 +1,12 @@
 import styled, { css } from "styled-components";
 
 import { BoxShadow, CenteredContent } from "styles/common";
-import { White, LightGrey, Blue, FadedRed } from "styles/color";
+import { Seashell, LightGrey, Blue, FadedRed } from "styles/color";
 
 const Card = styled.div`
   min-width: 320px;
   border-radius: 3px;
-  background-color: ${White};
+  background-color: ${Seashell};
   ${BoxShadow}
 `;
 

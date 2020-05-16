@@ -1,3 +1,5 @@
+import { AppearanceTypes } from "react-toast-notifications";
+
 export interface UserListItem {
   id: number;
   first_name: string;
@@ -28,6 +30,7 @@ export interface Message {
   id: number;
   text: string;
   name: string;
+  type: AppearanceTypes | "default";
   user_id: number;
   conference_id: number;
 }

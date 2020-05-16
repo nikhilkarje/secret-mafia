@@ -1,12 +1,20 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
+import { useToasts } from "react-toast-notifications";
 import styled, { css } from "styled-components";
 
 import Card from "components/common/Card";
 import ChatBox from "components/ChatBox";
 import GameRoom from "components/GameRoom";
 import CableContext from "containers/CableContext";
-import { BrightRed, Green, LightGrey } from "styles/color";
+import {
+  BrightRed,
+  Green,
+  LightGrey,
+  Skobeloff,
+  Charcoal,
+  ChampagnePink,
+} from "styles/color";
 import { get } from "utils/request";
 import { Room, Message } from "interfaces";
 import Footer from "components/layout/Footer";
@@ -18,6 +26,7 @@ export default function ChatRoom() {
   const contentRef = useRef(null);
   const messagesRef = useRef<Message[]>(messages);
   const { cable } = useContext(CableContext);
+  const { addToast } = useToasts();
 
   const scrollBottom = () => {
     if (contentRef.current) {
@@ -36,6 +45,9 @@ export default function ChatRoom() {
   };
 
   const handleReceivedConversation = (data: Message) => {
+    if (data.type !== "default") {
+      addToast(data.text, { appearance: data.type });
+    }
     if (messagesRef.current) {
       setMessages([...messagesRef.current, data]);
     }
@@ -72,8 +84,12 @@ export default function ChatRoom() {
             <Content ref={contentRef}>
               {messages.map((message) => (
                 <ChatWrapper key={message.id}>
-                  <NameSpan>{message.name}</NameSpan>
-                  <MessageSpan isAdmin={message.user_id === 6}>
+                  <NameSpan>{message.name}:</NameSpan>
+                  <MessageSpan
+                    isAdmin={
+                      message.user_id === (window as any).config.admin_id
+                    }
+                  >
                     {message.text}
                   </MessageSpan>
                 </ChatWrapper>
@@ -109,6 +125,7 @@ const CCard = styled(Card)`
   display: flex;
   flex-direction: column;
   border-left: 1px solid ${LightGrey};
+  background-color: ${ChampagnePink};
 `;
 
 const Content = styled.div`
@@ -120,6 +137,7 @@ const Content = styled.div`
 
 const ChatWrapper = styled.div`
   padding: 10px 0;
+  color: ${Charcoal};
 `;
 
 const NameSpan = styled.span`
@@ -134,6 +152,6 @@ const MessageSpan = styled.span<{
   ${({ isAdmin }) =>
     isAdmin &&
     css`
-      color: ${BrightRed};
+      color: ${Skobeloff};
     `}
 `;

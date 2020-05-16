@@ -1,9 +1,9 @@
 import styled, { css } from "styled-components";
-import { Black, EggShellWhite } from "styles/color";
+import { Charcoal, EggShellWhite } from "styles/color";
 
 const Table = styled.table`
   width: 100%;
-  color: ${Black};
+  color: ${Charcoal};
 `;
 
 const CellCss = css`

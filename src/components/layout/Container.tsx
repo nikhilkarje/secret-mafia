@@ -8,17 +8,17 @@ import { EggShellWhite } from "styles/color";
 
 export default function Container({
   isLogin,
-  roomId,
+  isInRoom,
   children,
 }: {
-  roomId?: number;
+  isInRoom?: boolean;
   isLogin?: boolean;
   children: React.ReactNode;
 }) {
   return (
     <>
       <CContainer>
-        <Header roomId={roomId} isLogin={isLogin} />
+        <Header isInRoom={isInRoom} isLogin={isLogin} />
         <Content>{children}</Content>
         <Footer />
       </CContainer>
@@ -34,7 +34,7 @@ const CContainer = styled.div`
 
 const Content = styled.div`
   height: 1px;
-  min-height: calc(100vh - ${HEADER_HEIGHT}px);
+  min-height: calc(100vh - ${HEADER_HEIGHT}px - ${FOOTER_HEIGHT}px);
   flex: 1 0 auto;
   background-color: ${EggShellWhite};
 `;

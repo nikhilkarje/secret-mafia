@@ -67,11 +67,11 @@ class GameWorkerJob < ApplicationJob
     broadcast_room_message(@payload[:id], "Election results are in")
     total_ayes.each do |vote|
       player = vote.player
-      broadcast_room_message(@payload[:id], "#{player.name} voted Ja")
+      broadcast_room_message(@payload[:id], "#{player.name} voted Ja", "success")
     end
     total_nayes.each do |vote|
       player = vote.player
-      broadcast_room_message(@payload[:id], "#{player.name} voted Nein")
+      broadcast_room_message(@payload[:id], "#{player.name} voted Nein", "warning")
     end
     return total_ayes.length > total_nayes.length
   end
@@ -81,7 +81,7 @@ class GameWorkerJob < ApplicationJob
     if facist_policies >= 3
       secret_hitler = @players.find_by(:secret_special_role => "hitler")
       if secret_hitler.chancellor_id
-        broadcast_room_message(@payload[:id], "Secret Hitler has been voted as Chancellor. Facists win.")
+        broadcast_room_message(@payload[:id], "Secret Hitler has been voted as Chancellor. Facists win.", "error")
         reveal_team
         return true
       end
@@ -147,7 +147,7 @@ class GameWorkerJob < ApplicationJob
         @election.save
         president.set_pending_action(:policy_draw_president)
       else
-        broadcast_room_message(@payload[:id], "The proposed government has failed")
+        broadcast_room_message(@payload[:id], "The proposed government has failed", "error")
         fail_election
         @conversation.save
         @election.save
@@ -157,10 +157,10 @@ class GameWorkerJob < ApplicationJob
       liberal_policies = @conversation.policy_passed.count("0")
       facist_policies = @conversation.policy_passed.count("1")
       if liberal_policies >= 5
-        broadcast_room_message(@payload[:id], "Five Liberal policies are enacted. Liberals win.")
+        broadcast_room_message(@payload[:id], "Five Liberal policies are enacted. Liberals win.", "success")
         reveal_team
       elsif facist_policies >= 6
-        broadcast_room_message(@payload[:id], "Six Fascist policies are enacted. Facists win.")
+        broadcast_room_message(@payload[:id], "Six Fascist policies are enacted. Facists win.", "error")
         reveal_team
       elsif !check_executive_power
         start_election

@@ -6,7 +6,7 @@ import TopHeader from "components/common/TopHeader";
 import Button from "components/common/Button";
 import WideInput from "components/common/WideInput";
 import { post } from "utils/request";
-import { Purple } from "styles/color";
+import { Terracotta } from "styles/color";
 
 export default function LoginCard() {
   const emailRef = useRef<HTMLInputElement>();
@@ -52,7 +52,7 @@ const Link = styled.a`
   margin-top: 15px;
   text-align: center;
   cursor: pointer;
-  color: ${Purple};
+  color: ${Terracotta};
 `;
 
 const Content = styled.div`

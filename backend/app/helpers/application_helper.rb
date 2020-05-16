@@ -6,6 +6,7 @@ module ApplicationHelper
   def config_json
     {
       user_id: session[:user_id],
+      admin_id: Api::User.find_by(:role => "game_bot").id,
     }
   end
 

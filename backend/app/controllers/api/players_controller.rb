@@ -37,7 +37,12 @@ class Api::PlayersController < Api::ConversationsController
       when Api::Player.action_option[:confirm_role]
         case @player.secret_team_role
         when "facist"
-          facist_players = @player.conversation.players.where(:secret_team_role => "facist")
+          conversation = @player.conversation
+          if @player.secret_special_role == "hitler" && conversation.total_players > 6
+            render json: { :type => "hitler_conferrence" }
+            return
+          end
+          facist_players = conversation.players.where(:secret_team_role => "facist")
           serialized_data = ActiveModel::Serializer::CollectionSerializer.new(facist_players, each_serializer: Api::PlayerSerializer, show_hitler: true)
           render json: { :type => "facist_conferrence", :data => serialized_data }
           return
@@ -162,7 +167,7 @@ class Api::PlayersController < Api::ConversationsController
         save_all
         @election.chancellor.set_pending_action(:policy_draw_chancellor)
         @player.set_pending_action(:default)
-        broadcast_room_message(@conversation.id, "The chancellor is picking one policy to pass out of two")
+        broadcast_room_message(@conversation.id, "The chancellor is picking one policy to pass out of two.")
         render json: {}, status: 200
         return
       end
@@ -183,7 +188,7 @@ class Api::PlayersController < Api::ConversationsController
         @election.election_status = "passed"
         save_all
         @player.set_pending_action(:default)
-        broadcast_room_message(@conversation.id, "Government has passed a #{policy == "0" ? "Liberal" : "Fascist"} policy")
+        broadcast_room_message(@conversation.id, "Government has passed a #{policy == "0" ? "Liberal" : "Fascist"} policy", "#{policy == "0" ? "success" : "error"}")
         GameWorkerJob.perform_now("end_election", Api::ConversationSerializer.new(@conversation).attributes)
         render json: {}, status: 200
         return
@@ -198,7 +203,7 @@ class Api::PlayersController < Api::ConversationsController
       @election = @conversation.elections.find_by(:election_status => "active")
       facist_policies = @conversation.policy_passed.count("1")
       if facist_policies == 5
-        broadcast_room_message(@conversation.id, "The chancellor proposes to veto the current session.")
+        broadcast_room_message(@conversation.id, "The chancellor proposes to veto the current session.", "warning")
         @player.set_pending_action(:default)
         @election.president.set_pending_action(:confirm_veto)
         render json: {}, status: 200
@@ -213,7 +218,7 @@ class Api::PlayersController < Api::ConversationsController
       @conversation = @player.conversation
       @election = @conversation.elections.find_by(:election_status => "active")
       if params[:confirm_veto] == "true" || params[:confirm_veto] == true
-        broadcast_room_message(@conversation.id, "The government has vetoed the current session.")
+        broadcast_room_message(@conversation.id, "The government has vetoed the current session.", "error")
         fail_election
         save_all
         @player.set_pending_action(:default)
@@ -236,7 +241,7 @@ class Api::PlayersController < Api::ConversationsController
       if dead_player
         dead_player.set_status(:dead)
         @player.set_pending_action(:default)
-        broadcast_room_message(@conversation.id, "President has executed #{dead_player.name}")
+        broadcast_room_message(@conversation.id, "President has executed #{dead_player.name}", "error")
         if dead_player.secret_special_role && dead_player.secret_special_role == "hitler"
           reveal_team
         else
@@ -298,23 +303,10 @@ class Api::PlayersController < Api::ConversationsController
         last_chancellor.set_chancellor(nil)
         @player.set_pending_action(:default)
         nominate_president(new_president)
-        broadcast_room_message(@conversation.id, "#{new_president.name} has been nomminated as the new President by the old President")
+        broadcast_room_message(@conversation.id, "#{new_president.name} has been nomminated as the new President by the old President", "success")
         render json: {}, status: 200
         return
       end
-    end
-    render json: {}, status: 401
-  end
-
-  def end_game
-    if @player
-      @conversation = @player.conversation
-      @player.destroy
-      if @conversation.players.length == 0
-        @conversation.destroy
-      end
-      render json: {}, status: 200
-      return
     end
     render json: {}, status: 401
   end

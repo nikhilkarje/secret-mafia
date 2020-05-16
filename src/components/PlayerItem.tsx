@@ -5,7 +5,15 @@ import { CenteredContent, OverlayCss } from "styles/common";
 import { MiniCard } from "components/common/Card";
 import { Player } from "interfaces";
 import CableContext from "containers/CableContext";
-import { Blue, LightGrey, Purple, White } from "styles/color";
+import {
+  Blue,
+  LightGrey,
+  Terracotta,
+  Seashell,
+  Crayola,
+  Charcoal,
+  SandyBrown,
+} from "styles/color";
 import ConfigContext from "containers/ConfigContext";
 import RoleConfirmModal from "components/RoleConfirmModal";
 import ChancellorConfirmModal from "components/ChancellorConfirmModal";
@@ -30,10 +38,10 @@ const PlayerItem = ({
   return (
     <>
       <CardWrapper>
-        <MiniCard isDisabled={player.status === "dead"}>
+        <PlayerCard isDisabled={player.status === "dead"}>
           {player.pending_action !== "none" && <Spinner />}
           {player.name}
-        </MiniCard>
+        </PlayerCard>
         {player.president_id && <PMiniCard>President</PMiniCard>}
         {player.chancellor_id && <PMiniCard>Chancellor</PMiniCard>}
       </CardWrapper>
@@ -80,12 +88,17 @@ const CardWrapper = styled.div`
   margin-top: 20px;
 `;
 
+const PlayerCard = styled(MiniCard)`
+  background-color: ${SandyBrown};
+  color: ${Charcoal};
+`;
+
 const PMiniCard = styled(MiniCard)`
   padding: 10px;
   font-size: 18px;
   margin-top: 5px;
-  background-color: ${Purple};
-  color: ${White};
+  background-color: ${Terracotta};
+  color: ${Seashell};
 `;
 
 const Spinner = styled.div`

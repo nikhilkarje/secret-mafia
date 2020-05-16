@@ -1,7 +1,7 @@
 import styled, { css } from "styled-components";
 
 import { CenteredContent, BoxShadow } from "styles/common";
-import { Black, LightGrey, Green, White, BrightRed } from "styles/color";
+import { Charcoal, LightGrey, Green, Seashell, BrightRed } from "styles/color";
 
 const Default = css`
   padding: 10px 25px;
@@ -22,12 +22,12 @@ const Button = styled.button`
   ${CenteredContent}
   ${Default}
   background: ${Green};
-  color: ${White};
+  color: ${Seashell};
 
   &:active {
     border: 1px solid ${Green};
     color: ${Green};
-    background: ${White};
+    background: ${Seashell};
   }
 `;
 
@@ -35,19 +35,19 @@ export const SecondaryButton = styled.button`
   ${CenteredContent}
   ${Default}
   background: ${LightGrey};
-  color: ${Black};
+  color: ${Charcoal};
 `;
 
 export const PrimaryButton = styled.button`
   ${CenteredContent}
   ${Default}
   background: ${BrightRed};
-  color: ${White};
+  color: ${Seashell};
 
   &:active {
     border: 1px solid ${BrightRed};
     color: ${BrightRed};
-    background: ${White};
+    background: ${Seashell};
   }
 `;
 

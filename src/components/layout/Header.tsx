@@ -3,20 +3,27 @@ import styled, { css } from "styled-components";
 
 import { HEADER_HEIGHT } from "constants/style";
 import { BoxShadowBottom } from "styles/common";
-import { DarkGrey, LightGrey, Purple } from "styles/color";
+import {
+  DarkGrey,
+  LightGrey,
+  Terracotta,
+  Skobeloff,
+  Charcoal,
+  Seashell,
+  Chestnut,
+} from "styles/color";
 
 export default function Header({
   isLogin,
-  roomId,
+  isInRoom,
 }: {
   isLogin?: boolean;
-  roomId?: number;
+  isInRoom?: boolean;
 }) {
-  console.log(roomId);
   return (
     <CHeader isLogin={isLogin}>
       <Logo>Secret Hitler</Logo>
-      {roomId ? (
+      {isInRoom ? (
         <Link href="/leave_game">Leave Game</Link>
       ) : !isLogin ? (
         <Link href="/logout">Log out</Link>
@@ -28,11 +35,10 @@ export default function Header({
 const Logo = styled.span`
   font-size: 20px;
   font-weight: 500;
-  color: ${Purple};
 `;
 
 const Link = styled.a`
-  color: ${DarkGrey};
+  color: ${Seashell};
 `;
 
 const CHeader = styled.div<{
@@ -44,6 +50,8 @@ const CHeader = styled.div<{
   border-bottom: 1px solid ${LightGrey};
   display: flex;
   align-items: center;
+  background-color: ${Chestnut};
+  color: ${Seashell};
 
   ${({ isLogin }) =>
     isLogin

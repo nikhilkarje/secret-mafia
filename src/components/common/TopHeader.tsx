@@ -1,7 +1,7 @@
 import styled, { css } from "styled-components";
 
 import { CenteredContent } from "styles/common";
-import { Chestnut, Seashell, Skobeloff } from "styles/color";
+import { Seashell, Skobeloff } from "styles/color";
 
 const TopHeader = styled.div<{
   backGroundColor?: any;

@@ -1,14 +1,21 @@
-export const Terracotta = "#E97A5B";
 export const Charcoal = "#264653";
-export const Chestnut = "#B25545";
 export const Seashell = "#f8edeb";
 export const Skobeloff = "#287271";
 export const PersianGreen = "#2A9D8F";
+export const DarkSeaGreen = "#8CB682";
+
+export const DarkSienna = "#6A040F";
+export const DarkRed = "#B70104";
+export const Melon = "#E8A598";
+
+export const Terracotta = "#E97A5B";
+export const Chestnut = "#B25545";
 export const ChampagnePink = "#F9E5D8";
 export const Crayola = "#EDCF74";
-export const SandyBrown = "#F4A261";
-export const Melon = "#E8A598";
-export const DarkSeaGreen = "#8CB682";
+
+export const PrussianBlue = "#1D3557";
+export const PowderBlue = "#A8DADC";
+export const SteelBlue = "#457B9D";
 
 export const Blue = "#3498db";
 export const BrightRed = "#ff0000";

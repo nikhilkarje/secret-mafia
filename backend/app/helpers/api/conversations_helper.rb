@@ -20,10 +20,10 @@ module Api::ConversationsHelper
   end
 
   def facist_power_broadcast_hash
-    { :kill => "President must execute one player",
-      :examine_deck => "President gets to examine top 3 cards from the deck",
-      :examine_player => "President get to examine team identity of a player",
-      :choose_president => "President must nominate another Player for next Presidential election" }
+    { :kill => "The President must kill a player",
+      :examine_deck => "The President examines the top 3 cards",
+      :examine_player => "The President investigates a player's identity card",
+      :choose_president => "The President picks the next presidential candidate" }
   end
 
   def facist_power_list

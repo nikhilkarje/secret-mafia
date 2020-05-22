@@ -39,7 +39,7 @@ const Input = styled.input<{
   height: 38px;
   box-sizing: border-box;
   color: ${Charcoal};
-  box-shadow: 0 2px 0 0 rgba(0, 0, 0, 0.08) inset;
+  border: 1px solid ${Charcoal};
 
   ${({ isError }) =>
     isError &&

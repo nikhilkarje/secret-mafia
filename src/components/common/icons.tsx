@@ -1,5 +1,5 @@
 import React from "react";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 
 interface IconProps extends Props {
   icon: string;
@@ -31,6 +31,16 @@ export const Delete = (props: Props) => <Icon {...props} icon="delete" />;
 export const DoubleArrow = (props: Props) => (
   <Icon {...props} icon="double_arrow" />
 );
+
+export const Next = (props: Props) => {
+  const AddedCss = css`
+    transform: rotate(90deg);
+    ${props.iconCss || ""}
+  `;
+  return <Icon {...props} iconCss={AddedCss} icon="navigation" />;
+};
+
+export const Draw = (props: Props) => <Icon {...props} icon="library_books" />;
 
 const CIcon = styled.i<{
   iconCss?: any;

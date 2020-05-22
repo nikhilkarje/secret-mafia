@@ -3,15 +3,7 @@ import styled, { css } from "styled-components";
 
 import { HEADER_HEIGHT } from "constants/style";
 import { BoxShadowBottom } from "styles/common";
-import {
-  DarkGrey,
-  LightGrey,
-  Terracotta,
-  Skobeloff,
-  Charcoal,
-  Seashell,
-  Chestnut,
-} from "styles/color";
+import { LightGrey, Chestnut, Seashell } from "styles/color";
 
 export default function Header({
   isLogin,

@@ -8,13 +8,12 @@ import ChatBox from "components/ChatBox";
 import GameRoom from "components/GameRoom";
 import CableContext from "containers/CableContext";
 import {
-  BrightRed,
-  Green,
   LightGrey,
   Skobeloff,
   Charcoal,
   ChampagnePink,
   Seashell,
+  DarkRed,
 } from "styles/color";
 import { get } from "utils/request";
 import { Room, Message } from "interfaces";
@@ -93,15 +92,12 @@ export default function ChatRoom() {
           <CCard collapseChat={collapseChat}>
             <Content ref={contentRef}>
               {messages.map((message) => (
-                <ChatWrapper key={message.id}>
+                <ChatWrapper
+                  isAdmin={message.user_id === (window as any).config.admin_id}
+                  key={message.id}
+                >
                   <NameSpan>{message.name}:</NameSpan>
-                  <MessageSpan
-                    isAdmin={
-                      message.user_id === (window as any).config.admin_id
-                    }
-                  >
-                    {message.text}
-                  </MessageSpan>
+                  <MessageSpan>{message.text}</MessageSpan>
                 </ChatWrapper>
               ))}
             </Content>
@@ -122,8 +118,13 @@ const IconWrapper = styled.div<{
 }>`
   display: inline-block;
   position: absolute;
-  right: 15px;
-  top: 17px;
+  right: 0;
+  top: 0;
+  height: 58px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 15px;
+  background-color: ${Skobeloff};
 
   ${({ collapseChat }) =>
     collapseChat &&
@@ -176,23 +177,23 @@ const Content = styled.div`
   height: calc(100% - 88px);
 `;
 
-const ChatWrapper = styled.div`
+const ChatWrapper = styled.div<{
+  isAdmin?: boolean;
+}>`
   padding: 10px 0;
   color: ${Charcoal};
+  ${({ isAdmin }) =>
+    isAdmin &&
+    css`
+      color: ${DarkRed};
+    `}
 `;
 
 const NameSpan = styled.span`
   font-weight: 400;
 `;
 
-const MessageSpan = styled.span<{
-  isAdmin?: boolean;
-}>`
+const MessageSpan = styled.span`
   padding-left: 10px;
   font-weight: 200;
-  ${({ isAdmin }) =>
-    isAdmin &&
-    css`
-      color: ${Skobeloff};
-    `}
 `;

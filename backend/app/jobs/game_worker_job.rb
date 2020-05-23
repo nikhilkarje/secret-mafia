@@ -49,7 +49,7 @@ class GameWorkerJob < ApplicationJob
     end
     # current_president = Api::Player.find(1)
     nominate_president(current_president)
-    broadcast_room_message(@payload[:id], "#{current_president.name} is the new President candidate")
+    broadcast_room_message(@payload[:id], "#{current_president.name} is the new Presidential candidate")
   end
 
   def reorder_policy
@@ -133,7 +133,7 @@ class GameWorkerJob < ApplicationJob
       end
     when "election_results"
       @election = @conversation.elections.find_by(:election_status => "active")
-      if @conversation.policy_order.length < 3
+      if @conversation.policy_order.length < 6
         reorder_policy
       end
       if is_aye?

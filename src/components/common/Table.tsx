@@ -1,5 +1,5 @@
 import styled, { css } from "styled-components";
-import { Charcoal, EggShellWhite } from "styles/color";
+import { Charcoal, Seashell } from "styles/color";
 
 const Table = styled.table`
   width: 100%;
@@ -22,7 +22,7 @@ export const TableData = styled.td`
 `;
 
 export const TableRow = styled.tr`
-  border-bottom: 1px solid ${EggShellWhite};
+  border-bottom: 1px solid ${Seashell};
 
   &:last-child {
     border-bottom: none;

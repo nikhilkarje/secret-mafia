@@ -3,8 +3,8 @@ import styled from "styled-components";
 
 import Header from "components/layout/Header";
 import Footer from "components/layout/Footer";
-import { HEADER_HEIGHT, FOOTER_HEIGHT } from "constants/style";
-import { EggShellWhite } from "styles/color";
+import { HEADER_HEIGHT } from "constants/style";
+import { Seashell } from "styles/color";
 
 export default function Container({
   isLogin,
@@ -20,8 +20,8 @@ export default function Container({
       <CContainer>
         <Header isInRoom={isInRoom} isLogin={isLogin} />
         <Content>{children}</Content>
-        <Footer />
       </CContainer>
+      <Footer />
     </>
   );
 }
@@ -34,7 +34,7 @@ const CContainer = styled.div`
 
 const Content = styled.div`
   height: 1px;
-  min-height: calc(100vh - ${HEADER_HEIGHT}px - ${FOOTER_HEIGHT}px);
+  min-height: calc(100vh - ${HEADER_HEIGHT}px);
   flex: 1 0 auto;
-  background-color: ${EggShellWhite};
+  background-color: ${Seashell};
 `;

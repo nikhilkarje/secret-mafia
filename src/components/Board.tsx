@@ -88,11 +88,11 @@ const Board = ({ game, mode }: Props) => {
         <PileContainer>
           <PileCounter mode={mode}>
             <span>Draw Pile</span>
-            <PileCount>{game.draw_pile}</PileCount>
+            <PileCount key={game.draw_pile}>{game.draw_pile}</PileCount>
           </PileCounter>
           <PileCounter mode={mode}>
             <span>Discard Pile</span>
-            <PileCount>{game.discard_pile}</PileCount>
+            <PileCount key={game.discard_pile}>{game.discard_pile}</PileCount>
           </PileCounter>
         </PileContainer>
       )}

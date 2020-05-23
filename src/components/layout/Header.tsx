@@ -14,7 +14,7 @@ export default function Header({
 }) {
   return (
     <CHeader isLogin={isLogin}>
-      <Logo>Secret Hitler</Logo>
+      <Logo>SECRET HITLER</Logo>
       {isInRoom ? (
         <Link href="/leave_game">Leave Game</Link>
       ) : !isLogin ? (
@@ -25,8 +25,10 @@ export default function Header({
 }
 
 const Logo = styled.span`
-  font-size: 20px;
+  font-family: "Piedra", cursive;
+  font-size: 24px;
   font-weight: 500;
+  letter-spacing: 3px;
 `;
 
 const Link = styled.a`

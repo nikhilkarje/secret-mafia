@@ -14,7 +14,7 @@ export default function App() {
       <Switch>
         <Route path="/room/:roomId">
           <Container isInRoom>
-            <ToastProvider autoDismiss={true} autoDismissTimeout={3000}>
+            <ToastProvider autoDismiss={true} autoDismissTimeout={10000}>
               <ChatRoom />
             </ToastProvider>
           </Container>

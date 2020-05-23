@@ -1,13 +1,13 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 
-import Card from "components/common/Card";
 import Button from "components/common/Button";
+import Card from "components/common/Card";
 import Modal from "components/common/Modal";
-import { get, post } from "utils/request";
 import { Player } from "interfaces";
-import { LightGrey, BrightRed, Blue } from "styles/color";
+import { Blue, BrightRed, LightGrey } from "styles/color";
 import { CenteredContent } from "styles/common";
+import { get } from "utils/request";
 
 interface ControlData {
   loaded: boolean;

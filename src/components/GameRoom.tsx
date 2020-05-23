@@ -44,9 +44,6 @@ const GameRoom = ({ room }: { room: Room }) => {
         disconnected: () => {},
       }
     );
-    setTimeout(() => {
-      setGame({ ...game, election_tracker: 2 });
-    }, 5000);
   }, []);
 
   return (
@@ -95,11 +92,11 @@ const GameRoom = ({ room }: { room: Room }) => {
               <PileContainer>
                 <PileCounter mode="liberal">
                   <span>Draw Pile</span>
-                  <span>{game.draw_pile}</span>
+                  <PileCount>{game.draw_pile}</PileCount>
                 </PileCounter>
                 <PileCounter mode="liberal">
                   <span>Discard Pile</span>
-                  <span>{game.discard_pile}</span>
+                  <PileCount>{game.discard_pile}</PileCount>
                 </PileCounter>
               </PileContainer>
             </BoardContainer>
@@ -121,8 +118,11 @@ const GameRoom = ({ room }: { room: Room }) => {
                             powered={!!executivePower(index)}
                             mode="fascist"
                           >
-                            {!!executivePower(index) &&
-                              executivePowerMessage(index)}
+                            {!!executivePower(index) && (
+                              <PowerTag>
+                                {executivePowerMessage(index)}
+                              </PowerTag>
+                            )}
                             {index === 4 && (
                               <PowerTag> Veto Power is unlocked</PowerTag>
                             )}
@@ -181,11 +181,66 @@ const COLOR_HASH = {
 
 type ModeType = "liberal" | "fascist";
 
+const ScaleFrame = keyframes`
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(2);
+  }
+  100% {
+    transform: scale(1);
+  }
+`;
+
+const OpacityFrame = keyframes`
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 100%;
+  }
+`;
+
+const WidthFrame = (width: number) => keyframes`
+  0% {
+    width: 0;
+  }
+  100% {
+    width: ${width}px;
+  }
+`;
+
+const HeightFrame = (height: number, format: string = "px") => keyframes`
+  0% {
+    height: 0;
+  }
+  100% {
+    height: ${height}${format};
+  }
+`;
+
+const PumpFrame = keyframes`
+  0% {
+    width: 0;
+    height: 0;
+  }
+  50% {
+    width: 40px;
+    height: 40px;
+  }
+  100% {
+    width: 30px;
+    height: 30px;
+  }
+`;
+
 const BoardContainer = styled.div<{
   mode: ModeType;
 }>`
   padding: ${PADDING_WIDTH}px;
   display: flex;
+  overflow: hidden;
   ${({ mode }) => css`
     border: ${BORDER_WIDTH}px dashed ${COLOR_HASH[mode][2]};
     background-color: ${COLOR_HASH[mode][0]};
@@ -220,12 +275,17 @@ const CommonCardCss = css<{
   `}
 `;
 
+const PileCount = styled.span`
+  animation: ${ScaleFrame} 1s;
+`;
+
 const PileCounter = styled.div<{
   mode: ModeType;
 }>`
   width: 187px;
   height: 48%;
   ${CommonCardCss}
+  animation: ${HeightFrame(48, "%")} 1s;
 `;
 
 const TeamTag = styled.div<{
@@ -299,21 +359,6 @@ const Tracker = styled.span<{
     `}
 `;
 
-const PumpFrame = keyframes`
-  0% {
-    width: 0;
-    height: 0;
-  }
-  50% {
-    width: 40px;
-    height: 40px;
-  }
-  100% {
-    width: 30px;
-    height: 30px;
-  }
-`;
-
 const ThickBorder = styled.div<{
   mode: ModeType;
 }>`
@@ -351,6 +396,7 @@ const PolicyTile = styled.div<{
   width: ${HOLDER_WIDTH}px;
   height: ${HOLDER_HEIGHT}px;
   ${CommonCardCss}
+  animation: ${HeightFrame(HOLDER_HEIGHT)} 1s;
 
   ${({ mode }) => css`
     background-color: ${COLOR_HASH[mode][1]};
@@ -359,6 +405,7 @@ const PolicyTile = styled.div<{
 
 const PowerTag = styled.span`
   margin-top: 5px;
+  animation: ${OpacityFrame} 2s;
 `;
 
 const PolicyHolder = styled.div<{
@@ -371,6 +418,7 @@ const PolicyHolder = styled.div<{
   ${CenteredContent}
   flex-direction: column;
   color: ${COLOR_HASH["fascist"][2]};
+  animation: ${WidthFrame(HOLDER_WIDTH)} 1s;
 
   ${({ mode, powered }) =>
     !powered &&

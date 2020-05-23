@@ -19,12 +19,25 @@ import { get } from "utils/request";
 import { Room, Message } from "interfaces";
 import Footer from "components/layout/Footer";
 import { DoubleArrow } from "components/common/icons";
-import { HEADER_HEIGHT } from "constants/style";
+
+const getCollapseValue = () => {
+  if (!window.localStorage) {
+    return false;
+  }
+  return window.localStorage.getItem("collapse") === "true";
+};
+
+const setCollapseValue = (value: boolean) => {
+  if (!window.localStorage) {
+    return false;
+  }
+  window.localStorage.setItem("collapse", String(value));
+};
 
 export default function ChatRoom() {
   const { roomId } = useParams();
   const [messages, setMessages] = useState<Message[]>([]);
-  const [collapseChat, setCollapseChat] = useState(false);
+  const [collapseChat, setCollapseChat] = useState(getCollapseValue());
   const [room, setRoom] = useState<Room | null>(null);
   const contentRef = useRef(null);
   const messagesRef = useRef<Message[]>(messages);
@@ -82,7 +95,10 @@ export default function ChatRoom() {
           <GameContainer>
             <IconWrapper collapseChat={collapseChat}>
               <DoubleArrow
-                onClick={() => setCollapseChat(!collapseChat)}
+                onClick={() => {
+                  setCollapseValue(!collapseChat);
+                  setCollapseChat(!collapseChat);
+                }}
                 iconCss={ArrowCss}
               />
             </IconWrapper>

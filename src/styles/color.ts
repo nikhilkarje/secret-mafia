@@ -5,7 +5,7 @@ export const PersianGreen = "#2A9D8F";
 export const DarkSeaGreen = "#8CB682";
 
 export const DarkSienna = "#6A040F";
-export const DarkRed = "#B70104";
+export const DarkRed = "#9D0208";
 export const Melon = "#E8A598";
 
 export const Terracotta = "#E97A5B";

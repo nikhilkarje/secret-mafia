@@ -67,7 +67,11 @@ const Players = ({ room }: { room: Room }) => {
     <Container>
       {players &&
         players.map((player) => (
-          <PlayerItem canVeto={room.facist_policy === 5} player={player} />
+          <PlayerItem
+            key={player.id}
+            canVeto={room.facist_policy === 5}
+            player={player}
+          />
         ))}
     </Container>
   );

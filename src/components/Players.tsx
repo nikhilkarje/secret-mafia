@@ -25,20 +25,21 @@ const Players = ({ room }: { room: Room }) => {
   const handleReceivedConversation = (data: DataType) => {
     const { type } = data;
     const player = data.data;
-    if (playersRef.current) {
+    const playersClone = JSON.parse(JSON.stringify(playersRef.current));
+    if (playersClone) {
       let playerIndex;
-      for (let index = 0; index < playersRef.current.length; index++) {
-        const item = playersRef.current[index];
+      for (let index = 0; index < playersClone.length; index++) {
+        const item = playersClone[index];
         if (item.id === player.id) {
           playerIndex = index;
+          break;
         }
       }
       if (type === "new") {
         if (typeof playerIndex === "undefined") {
-          setPlayers([...playersRef.current, player]);
+          setPlayers([...playersClone, player]);
         }
       } else if (type === "update") {
-        const playersClone = [...playersRef.current];
         playersClone[playerIndex] = player;
         setPlayers(playersClone);
       }
@@ -59,7 +60,7 @@ const Players = ({ room }: { room: Room }) => {
   }, []);
 
   useEffect(() => {
-    playersRef.current = players;
+    playersRef.current = JSON.parse(JSON.stringify(players));
   }, [players]);
 
   return (

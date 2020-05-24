@@ -15,6 +15,7 @@ import Table, {
 } from "components/common/Table";
 import { DarkGrey } from "styles/color";
 import { get } from "utils/request";
+import { HEADER_HEIGHT, FOOTER_HEIGHT } from "constants/style";
 
 export default function UserList() {
   const [users, setUsers] = useState<UserListItem[] | null>(null);
@@ -84,6 +85,8 @@ const CTopHeader = styled(TopHeader)`
 
 const CCard = styled(Card)`
   min-width: 960px;
+  max-height: calc(100vh - ${HEADER_HEIGHT + FOOTER_HEIGHT + 100});
+  overflow: scroll;
 `;
 
 const AddIconCss = css`

@@ -331,7 +331,7 @@ class Api::PlayersController < Api::ConversationsController
         message = "Secret Hitler is dead. Liberals win"
       elsif facist_policies > 3
         election = @conversation.elections.find_by(:election_status => "active")
-        if election.chancellor_id == @player.id
+        if secret_hitler.id === election.chancellor_id
           message = "Secret Hitler has been voted as Chancellor. Facists win."
         end
       end

@@ -54,10 +54,13 @@ class GameWorkerJob < ApplicationJob
 
   def reorder_policy
     policy_order = @conversation.policy_order
-    max = 17 - policy_order.length
-    n = 6 - policy_order.count("0")
+    policy_passed = @conversation.policy_passed
+    total_cards = policy_order + @conversation.policy_passed
+    max = 17 - policy_order.length - policy_passed.length
+    n = 6 - policy_order.count("0") - policy_passed.count("0")
     new_policy_order = generate_policy_order(n, max)
     @conversation.policy_order += new_policy_order
+    @conversation.discard_pile = ""
   end
 
   def is_aye?

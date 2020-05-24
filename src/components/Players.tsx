@@ -40,14 +40,13 @@ const Players = ({ room }: { room: Room }) => {
       }
       if (type === "new") {
         if (typeof playerIndex === "undefined") {
-          playersRef.current = JSON.parse(JSON.stringify(playersClone));
-          setPlayers([...playersClone, player]);
+          playersClone.push(player);
         }
       } else if (type === "update") {
         playersClone[playerIndex] = player;
-        playersRef.current = JSON.parse(JSON.stringify(playersClone));
-        setPlayers(playersClone);
       }
+      playersRef.current = JSON.parse(JSON.stringify(playersClone));
+      setPlayers(playersClone);
     }
   };
 

@@ -10,6 +10,8 @@ import EndGameModal from "components/EndGameModal";
 import ExamineDeckModal from "components/ExamineDeckModal";
 import ExecutePlayerModal from "components/ExecutePlayerModal";
 import PresidentialPolicyModal from "components/PresidentialPolicyModal";
+import ExaminePlayer from "components/ExaminePlayer";
+import ConfirmExamination from "components/ConfirmExamination";
 import RoleConfirmModal from "components/RoleConfirmModal";
 import ConfigContext from "containers/ConfigContext";
 import { Player } from "interfaces";
@@ -81,6 +83,12 @@ const PlayerItem = ({
       )}
       {isCurrentPlayer && player.pending_action === "confirm_veto" && (
         <ConfirmVetoModal player={player} />
+      )}
+      {isCurrentPlayer && player.pending_action === "confirm_investigation" && (
+        <ConfirmExamination player={player} />
+      )}
+      {isCurrentPlayer && player.pending_action === "examine_player" && (
+        <ExaminePlayer player={player} />
       )}
       {isCurrentPlayer && player.pending_action === "end_game" && (
         <EndGameModal player={player} />

@@ -96,6 +96,9 @@ const CCard = styled(Card)`
   display: inline-flex;
   flex-direction: column;
   margin-top: 20px;
+  &:not(:first-child) {
+    margin-left: 15px;
+  }
 `;
 
 const RedSpan = styled.div`

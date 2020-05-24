@@ -13,6 +13,7 @@ import PresidentialPolicyModal from "components/PresidentialPolicyModal";
 import ExaminePlayer from "components/ExaminePlayer";
 import ConfirmExamination from "components/ConfirmExamination";
 import RoleConfirmModal from "components/RoleConfirmModal";
+import ChoosePresident from "components/ChoosePresident";
 import ConfigContext from "containers/ConfigContext";
 import { Player } from "interfaces";
 import {
@@ -86,6 +87,9 @@ const PlayerItem = ({
       )}
       {isCurrentPlayer && player.pending_action === "confirm_investigation" && (
         <ConfirmExamination player={player} />
+      )}
+      {isCurrentPlayer && player.pending_action === "choose_president" && (
+        <ChoosePresident player={player} />
       )}
       {isCurrentPlayer && player.pending_action === "examine_player" && (
         <ExaminePlayer player={player} />

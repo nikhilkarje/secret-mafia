@@ -1,21 +1,21 @@
-import React, { useEffect, useState, useRef, createRef } from "react";
+import React, { useEffect, useState } from "react";
 import styled, { css } from "styled-components";
 
-import { UserListItem } from "interfaces";
 import AddUserModal from "components/AddUserModal";
-import EditUserModal from "components/EditUserModal";
-import DeleteUserModal from "components/DeleteUserModal";
 import Card from "components/common/Card";
 import { Add, Delete, Edit } from "components/common/icons";
-import TopHeader from "components/common/TopHeader";
 import Table, {
+  TableData,
   TableHeader,
   TableRow,
-  TableData,
 } from "components/common/Table";
+import TopHeader from "components/common/TopHeader";
+import DeleteUserModal from "components/DeleteUserModal";
+import EditUserModal from "components/EditUserModal";
+import { FOOTER_HEIGHT, HEADER_HEIGHT } from "constants/style";
+import { UserListItem } from "interfaces";
 import { DarkGrey } from "styles/color";
 import { get } from "utils/request";
-import { HEADER_HEIGHT, FOOTER_HEIGHT } from "constants/style";
 
 export default function UserList() {
   const [users, setUsers] = useState<UserListItem[] | null>(null);

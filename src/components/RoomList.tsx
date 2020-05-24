@@ -1,16 +1,17 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import styled, { css } from "styled-components";
 
-import { Room } from "interfaces";
-import NewRoomModal from "components/NewRoomModal";
 import Card from "components/common/Card";
 import { Add } from "components/common/icons";
-import TopHeader from "components/common/TopHeader";
 import Table, {
+  TableData,
   TableHeader,
   TableRow,
-  TableData,
 } from "components/common/Table";
+import TopHeader from "components/common/TopHeader";
+import NewRoomModal from "components/NewRoomModal";
+import { FOOTER_HEIGHT, HEADER_HEIGHT } from "constants/style";
+import { Room } from "interfaces";
 import { Terracotta } from "styles/color";
 import { get, post } from "utils/request";
 
@@ -86,6 +87,8 @@ const CTopHeader = styled(TopHeader)`
 
 const CCard = styled(Card)`
   min-width: 960px;
+  max-height: calc(100vh - ${HEADER_HEIGHT + FOOTER_HEIGHT + 100});
+  overflow: scroll;
 `;
 
 const IconCss = css`

@@ -19,7 +19,10 @@ const Players = ({ room }: { room: Room }) => {
   const fetchPlayers = () => {
     get(`/api/conversations/${room.id}/players`)
       .then((response) => response.json())
-      .then((data) => setPlayers(data));
+      .then((data) => {
+        playersRef.current = JSON.parse(JSON.stringify(data));
+        setPlayers(data);
+      });
   };
 
   const handleReceivedConversation = (data: DataType) => {
@@ -37,10 +40,12 @@ const Players = ({ room }: { room: Room }) => {
       }
       if (type === "new") {
         if (typeof playerIndex === "undefined") {
+          playersRef.current = JSON.parse(JSON.stringify(playersClone));
           setPlayers([...playersClone, player]);
         }
       } else if (type === "update") {
         playersClone[playerIndex] = player;
+        playersRef.current = JSON.parse(JSON.stringify(playersClone));
         setPlayers(playersClone);
       }
     }
@@ -58,10 +63,6 @@ const Players = ({ room }: { room: Room }) => {
       }
     );
   }, []);
-
-  useEffect(() => {
-    playersRef.current = JSON.parse(JSON.stringify(players));
-  }, [players]);
 
   return (
     <Container>

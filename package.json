@@ -23,7 +23,7 @@
     "@types/react-toast-notifications": "^2.4.0",
     "@types/react-addons-css-transition-group": "^15.0.5",
     "css-loader": "^3.0.0",
-    "node-sass": "^4.14.1",
+    "node-sass": "^7.0.0",
     "sass-loader": "^7.0.3",
     "source-map-loader": "^0.2.4",
     "style-loader": "^0.21.0",
